@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:healthsnap_app/screens/authentication_screens/create_account.dart';
 import 'package:healthsnap_app/screens/authentication_screens/forgot_password.dart';
 import 'package:healthsnap_app/services/authentication_services/auth_services.dart';
 
@@ -49,31 +48,9 @@ class _LoginScreenState extends State<LoginScreen> {
                   children: [
                     Image.asset('assets/logo.png', height: 80),
 
-                    Row(
-                      children: [
-                        ElevatedButton(
-                          onPressed: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => const RegisterScreen(),
-                              ),
-                            );
-                          },
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: const Color(0xFF1644E8),
-                            shape: const StadiumBorder(),
-                          ),
-                          child: const Text(
-                            'Create ⟶',
-                            style: TextStyle(color: Colors.white),
-                          ),
-                        ),
-                        IconButton(
-                          onPressed: () {},
-                          icon: Icon(Icons.menu, color: Colors.white54),
-                        ),
-                      ],
+                    IconButton(
+                      onPressed: () {},
+                      icon: Icon(Icons.menu, color: Colors.white54),
                     ),
                   ],
                 ),

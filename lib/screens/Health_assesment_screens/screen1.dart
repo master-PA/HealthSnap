@@ -1,18 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:healthsnap_app/widgets/survey_card.dart';
+import 'package:healthsnap_app/screens/Health_assesment_screens/screen2.dart';
+import 'package:healthsnap_app/services/authentication_services/auth_services.dart';
+import 'package:healthsnap_app/widgets/survey1_card.dart';
 
-class HealthAssesmentScreen extends StatefulWidget {
-  const HealthAssesmentScreen({super.key});
+class SurveyScreenFirst extends StatelessWidget {
+  SurveyScreenFirst({super.key});
 
-  @override
-  State<HealthAssesmentScreen> createState() => _HealthAssesmentScreenState();
-}
-
-class _HealthAssesmentScreenState extends State<HealthAssesmentScreen> {
-  @override
-  void dispose() {
-    super.dispose();
-  }
+  final String? username = authService.value.currentUser?.displayName ?? "User";
 
   @override
   Widget build(BuildContext context) {
@@ -30,19 +24,19 @@ class _HealthAssesmentScreenState extends State<HealthAssesmentScreen> {
                   Image.asset('assets/logo.png', height: 80),
                   Row(
                     children: [
-                      ElevatedButton(
+                      TextButton(
                         onPressed: () {
                           Navigator.pop(context);
                         },
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color(0xFF1644E8),
-                          shape: const StadiumBorder(),
-                        ),
                         child: const Text(
-                          '← Back',
-                          style: TextStyle(color: Colors.grey),
+                          'Back',
+                          style: TextStyle(
+                            color: Colors.grey,
+                            decoration: TextDecoration.underline,
+                          ),
                         ),
                       ),
+
                       IconButton(
                         onPressed: () {},
                         icon: Icon(Icons.menu, color: Colors.white54),
@@ -52,7 +46,7 @@ class _HealthAssesmentScreenState extends State<HealthAssesmentScreen> {
                 ],
               ),
               const SizedBox(height: 30),
-              const Text('👋 Hey User !'),
+              Text('👋 Hey $username !'),
               const SizedBox(height: 40),
               const Text('Who is the Survey for?'),
               const SizedBox(height: 20),
@@ -60,13 +54,32 @@ class _HealthAssesmentScreenState extends State<HealthAssesmentScreen> {
                 mainAxisSize: MainAxisSize.min,
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: [
-                  SurveyCard(icon: Icons.person, title: "Myself"),
+                  SurveyCard(imagepath: 'assets/icon1.png', title: "Myself"),
                   SizedBox(width: 10),
                   SurveyCard(
-                    icon: Icons.diversity_3_rounded,
+                    imagepath: 'assets/icon2.png',
                     title: "Someone else",
                   ),
                 ],
+              ),
+              const SizedBox(height: 25),
+
+              Center(
+                child: ElevatedButton(
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => SurveyScreenSecond(),
+                      ),
+                    );
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Color(0xFF1644E8),
+                    shape: StadiumBorder(),
+                  ),
+                  child: Text('Next ⟶', style: TextStyle(color: Colors.white)),
+                ),
               ),
             ],
           ),

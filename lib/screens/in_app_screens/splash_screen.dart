@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:healthsnap_app/screens/in_app_screens/onboarding_screen.dart';
+import 'package:healthsnap_app/services/authentication_services/auth_layout.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -23,7 +23,7 @@ class _SplashScreenState extends State<SplashScreen> {
 
     Navigator.pushReplacement(
       context,
-      MaterialPageRoute(builder: (context) => const OnboardingScreen()),
+      MaterialPageRoute(builder: (context) => const AuthLayout()),
     );
   }
 

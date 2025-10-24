@@ -8,13 +8,10 @@ class LoadingWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.transparent,
-      body: Center(
-        child: LoadingAnimationWidget.progressiveDots(
-          color: Colors.white,
-          size: 200,
-        ),
+    return Center(
+      child: LoadingAnimationWidget.progressiveDots(
+        color: Colors.white,
+        size: 200,
       ),
     );
   }

@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:healthsnap_app/screens/authentication_screens/login_screen.dart';
-import 'package:healthsnap_app/screens/main_screens/homescreen.dart';
+import 'package:healthsnap_app/screens/authentication_screens/create_account.dart';
+import 'package:healthsnap_app/screens/main_screens/dashboard.dart';
 import 'package:healthsnap_app/services/authentication_services/auth_services.dart';
+import 'package:healthsnap_app/widgets/loading_widget.dart';
 
 class AuthLayout extends StatelessWidget {
   const AuthLayout({super.key, this.pageIfNotConnected});
@@ -17,11 +18,11 @@ class AuthLayout extends StatelessWidget {
           builder: (context, snapshot) {
             Widget widget;
             if (snapshot.connectionState == ConnectionState.waiting) {
-              return widget = Center(child: CircularProgressIndicator());
+              return widget = LoadingWidget();
             } else if (snapshot.hasData) {
-              widget = Homescreen();
+              widget = DashboardScreen();
             } else {
-              widget = pageIfNotConnected ?? LoginScreen();
+              widget = pageIfNotConnected ?? RegisterScreen();
             }
             return widget;
           },

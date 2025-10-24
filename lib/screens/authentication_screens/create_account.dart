@@ -1,4 +1,7 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:healthsnap_app/screens/authentication_screens/login_screen.dart';
+import 'package:healthsnap_app/screens/in_app_screens/start_tracking.dart';
 import 'package:healthsnap_app/services/authentication_services/auth_services.dart';
 
 class RegisterScreen extends StatefulWidget {
@@ -24,12 +27,55 @@ class _RegisterScreenState extends State<RegisterScreen> {
     super.dispose();
   }
 
-  void register() {
+  void register() async {
     if (_formKey.currentState!.validate()) {
-      authService.value.createAccount(
-        email: _emailc.text,
-        password: _passwordc.text,
-      );
+      try {
+        showDialog(
+          context: context,
+          barrierDismissible: false,
+          builder: (context) =>
+              const Center(child: CircularProgressIndicator()),
+        );
+
+        await authService.value.createAccount(
+          email: _emailc.text,
+          password: _passwordc.text,
+        );
+
+        if (_fullNamec.text.isNotEmpty) {
+          await authService.value.updateUsername(username: _fullNamec.text);
+        }
+
+        if (mounted) {
+          Navigator.of(context).pushReplacement(
+            MaterialPageRoute(
+              builder: (context) => const StartTrackingScreen(),
+            ),
+          );
+        }
+      } on FirebaseAuthException catch (e) {
+        if (mounted) {
+          Navigator.of(context).pop();
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(
+                e.message ?? 'An error occurred during registration',
+              ),
+              backgroundColor: Colors.red,
+            ),
+          );
+        }
+      } catch (e) {
+        if (mounted) {
+          Navigator.of(context).pop();
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('An unexpected error occurred'),
+              backgroundColor: Colors.red,
+            ),
+          );
+        }
+      }
     }
   }
 
@@ -52,31 +98,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   children: [
                     Image.asset('assets/logo.png', height: 80),
 
-                    Row(
-                      children: [
-                        ElevatedButton(
-                          onPressed: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => const RegisterScreen(),
-                              ),
-                            );
-                          },
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: const Color(0xFF1644E8),
-                            shape: const StadiumBorder(),
-                          ),
-                          child: const Text(
-                            'LogIn ⟶',
-                            style: TextStyle(color: Colors.white),
-                          ),
-                        ),
-                        IconButton(
-                          onPressed: () {},
-                          icon: Icon(Icons.menu, color: Colors.white54),
-                        ),
-                      ],
+                    IconButton(
+                      onPressed: () {},
+                      icon: Icon(Icons.menu, color: Colors.white54),
                     ),
                   ],
                 ),
@@ -219,9 +243,15 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                   "Already have an account? ",
                                   style: TextStyle(fontSize: 14),
                                 ),
+
                                 TextButton(
                                   onPressed: () {
-                                    Navigator.pop(context);
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) => LoginScreen(),
+                                      ),
+                                    );
                                   },
                                   child: const Text(
                                     'Log in',

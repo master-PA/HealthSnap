@@ -1,15 +1,16 @@
 import 'package:flutter/material.dart';
-import 'package:healthsnap_app/screens/in_app_screens/health_assesment_screen.dart';
+import 'package:healthsnap_app/screens/Health_assesment_screens/screen1.dart';
+import 'package:healthsnap_app/screens/main_screens/dashboard.dart';
 import 'package:healthsnap_app/widgets/bulletin.dart';
 
-class OnboardingScreen extends StatefulWidget {
-  const OnboardingScreen({super.key});
+class StartTrackingScreen extends StatefulWidget {
+  const StartTrackingScreen({super.key});
 
   @override
-  State<OnboardingScreen> createState() => _OnboardingScreenState();
+  State<StartTrackingScreen> createState() => _StartTrackingScreenState();
 }
 
-class _OnboardingScreenState extends State<OnboardingScreen> {
+class _StartTrackingScreenState extends State<StartTrackingScreen> {
   int _currentIndex = 0;
   final List<String> _words = ['patterns', 'needs', 'signals'];
 
@@ -110,7 +111,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                     Navigator.pushReplacement(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => HealthAssesmentScreen(),
+                        builder: (context) => SurveyScreenFirst(),
                       ),
                     );
                   },
@@ -132,7 +133,33 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                   ),
                 ),
               ),
+              const SizedBox(height: 16),
 
+              OutlinedButton(
+                onPressed: () {
+                  Navigator.pushAndRemoveUntil(
+                    context,
+                    MaterialPageRoute(builder: (context) => DashboardScreen()),
+                    (Route<dynamic> route) => false,
+                  );
+                },
+                style: OutlinedButton.styleFrom(
+                  backgroundColor: Colors.grey[200],
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 32,
+                    vertical: 16,
+                  ),
+                  shape: const StadiumBorder(),
+                ),
+                child: Text(
+                  'Skip',
+                  style: TextStyle(
+                    fontSize: 16,
+                    color: Colors.black,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ),
               const SizedBox(height: 50),
 
               Center(

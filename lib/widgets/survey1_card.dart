@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 
 class SurveyCard extends StatelessWidget {
-  const SurveyCard({super.key, required this.icon, required this.title});
+  const SurveyCard({super.key, required this.imagepath, required this.title});
 
-  final IconData icon;
+  final String imagepath;
   final String title;
 
   @override
@@ -16,7 +16,8 @@ class SurveyCard extends StatelessWidget {
         shadowColor: const Color(0xFF1644E8),
         child: Column(
           children: [
-            Icon(icon, size: 40),
+            Image.asset(imagepath, height: 60, width: 60),
+            const SizedBox(height: 8),
             Text(
               title,
               style: TextStyle(
