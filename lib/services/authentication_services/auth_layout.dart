@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:healthsnap_app/screens/authentication_screens/login_screen.dart';
+import 'package:healthsnap_app/screens/main_screens/homescreen.dart';
 import 'package:healthsnap_app/services/authentication_services/auth_services.dart';
 
 class AuthLayout extends StatelessWidget {
@@ -18,9 +19,7 @@ class AuthLayout extends StatelessWidget {
             if (snapshot.connectionState == ConnectionState.waiting) {
               return widget = Center(child: CircularProgressIndicator());
             } else if (snapshot.hasData) {
-              widget = Container(
-                color: Colors.amber,
-              ); // I will replace this with Home Screen
+              widget = Homescreen();
             } else {
               widget = pageIfNotConnected ?? LoginScreen();
             }

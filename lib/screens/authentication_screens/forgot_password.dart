@@ -66,16 +66,6 @@ class _ForgotPasswordState extends State<ForgotPassword> {
 
                     Row(
                       children: [
-                        TextButton(
-                          onPressed: () {},
-                          child: const Text("About us"),
-                        ),
-                        const SizedBox(width: 8),
-                        TextButton(
-                          onPressed: () {},
-                          child: const Text("App ▼"),
-                        ),
-                        const SizedBox(width: 8),
                         ElevatedButton(
                           onPressed: () {
                             Navigator.pop(context);
@@ -89,6 +79,10 @@ class _ForgotPasswordState extends State<ForgotPassword> {
                             style: TextStyle(color: Colors.grey),
                           ),
                         ),
+                        IconButton(
+                          onPressed: () {},
+                          icon: Icon(Icons.menu, color: Colors.white54),
+                        ),
                       ],
                     ),
                   ],
@@ -96,6 +90,10 @@ class _ForgotPasswordState extends State<ForgotPassword> {
               ),
 
               const SizedBox(height: 100),
+
+              Image.asset('assets/logo.png', height: 150),
+
+              const SizedBox(height: 20),
 
               Card(
                 shape: RoundedRectangleBorder(
@@ -112,8 +110,14 @@ class _ForgotPasswordState extends State<ForgotPassword> {
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      Image.asset('assets/logo.png', height: 200),
-
+                      const Text(
+                        "Reset Password",
+                        style: TextStyle(
+                          fontSize: 24,
+                          fontWeight: FontWeight.w700,
+                          color: Colors.black54,
+                        ),
+                      ),
                       const SizedBox(height: 25),
 
                       Form(
@@ -124,7 +128,7 @@ class _ForgotPasswordState extends State<ForgotPassword> {
                               controller: _emailc,
                               keyboardType: TextInputType.emailAddress,
                               decoration: const InputDecoration(
-                                labelText: "Email Address",
+                                labelText: "Email",
                                 prefixIcon: Icon(Icons.email_rounded),
                                 border: OutlineInputBorder(),
                               ),

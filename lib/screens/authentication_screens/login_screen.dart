@@ -51,12 +51,6 @@ class _LoginScreenState extends State<LoginScreen> {
 
                     Row(
                       children: [
-                        TextButton(
-                          onPressed: () {},
-                          child: const Text("About us"),
-                        ),
-                        const SizedBox(width: 6),
-
                         ElevatedButton(
                           onPressed: () {
                             Navigator.push(
@@ -71,9 +65,13 @@ class _LoginScreenState extends State<LoginScreen> {
                             shape: const StadiumBorder(),
                           ),
                           child: const Text(
-                            'Register ⟶',
+                            'Create ⟶',
                             style: TextStyle(color: Colors.white),
                           ),
+                        ),
+                        IconButton(
+                          onPressed: () {},
+                          icon: Icon(Icons.menu, color: Colors.white54),
                         ),
                       ],
                     ),
@@ -81,7 +79,11 @@ class _LoginScreenState extends State<LoginScreen> {
                 ),
               ),
 
-              const SizedBox(height: 100),
+              const SizedBox(height: 60),
+
+              Image.asset('assets/logo.png', height: 150),
+
+              const SizedBox(height: 30),
 
               Card(
                 shape: RoundedRectangleBorder(
@@ -98,7 +100,14 @@ class _LoginScreenState extends State<LoginScreen> {
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      Image.asset('assets/logo.png', height: 250),
+                      const Text(
+                        "Login",
+                        style: TextStyle(
+                          fontWeight: FontWeight.w700,
+                          color: Colors.black54,
+                          fontSize: 60,
+                        ),
+                      ),
 
                       const SizedBox(height: 25),
 

@@ -10,25 +10,16 @@ class RegisterScreen extends StatefulWidget {
 
 class _RegisterScreenState extends State<RegisterScreen> {
   final TextEditingController _fullNamec = TextEditingController();
-  final TextEditingController _userNamec = TextEditingController();
   final TextEditingController _emailc = TextEditingController();
-  final TextEditingController _phonec = TextEditingController();
-  final TextEditingController _agec = TextEditingController();
   final TextEditingController _passwordc = TextEditingController();
-  final TextEditingController _locationc = TextEditingController();
   final _formKey = GlobalKey<FormState>();
   final ValueNotifier<bool> isVisible = ValueNotifier(false);
-  String? genderValue;
 
   @override
   void dispose() {
     _fullNamec.dispose();
-    _userNamec.dispose();
     _emailc.dispose();
-    _phonec.dispose();
-    _agec.dispose();
     _passwordc.dispose();
-    _locationc.dispose();
     isVisible.dispose();
     super.dispose();
   }
@@ -60,25 +51,30 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Image.asset('assets/logo.png', height: 80),
+
                     Row(
                       children: [
-                        TextButton(
-                          onPressed: () {},
-                          child: const Text("About us"),
-                        ),
-                        const SizedBox(width: 6),
                         ElevatedButton(
                           onPressed: () {
-                            Navigator.pop(context);
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => const RegisterScreen(),
+                              ),
+                            );
                           },
                           style: ElevatedButton.styleFrom(
                             backgroundColor: const Color(0xFF1644E8),
                             shape: const StadiumBorder(),
                           ),
                           child: const Text(
-                            'Login ⟶',
+                            'LogIn ⟶',
                             style: TextStyle(color: Colors.white),
                           ),
+                        ),
+                        IconButton(
+                          onPressed: () {},
+                          icon: Icon(Icons.menu, color: Colors.white54),
                         ),
                       ],
                     ),
@@ -86,6 +82,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 ),
               ),
               const SizedBox(height: 40),
+              Image.asset('assets/logo.png', height: 150),
+
+              const SizedBox(height: 20),
+
               Card(
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(20),
@@ -101,14 +101,12 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      Image.asset('assets/logo.png', height: 150),
-                      const SizedBox(height: 25),
                       const Text(
                         "Create Your Account",
                         style: TextStyle(
                           fontSize: 24,
-                          fontWeight: FontWeight.bold,
-                          color: Color(0xFF1644E8),
+                          fontWeight: FontWeight.w700,
+                          color: Colors.black54,
                         ),
                       ),
                       const SizedBox(height: 25),
@@ -134,26 +132,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             const SizedBox(height: 20),
 
                             TextFormField(
-                              controller: _userNamec,
-                              keyboardType: TextInputType.text,
-                              decoration: const InputDecoration(
-                                labelText: "Username",
-                                prefixIcon: Icon(Icons.account_circle_rounded),
-                                border: OutlineInputBorder(),
-                              ),
-                              validator: (value) {
-                                if (value == null || value.isEmpty) {
-                                  return "Enter a username";
-                                }
-                                if (value.length < 3) {
-                                  return "Username must be at least 3 characters";
-                                }
-                                return null;
-                              },
-                            ),
-                            const SizedBox(height: 20),
-
-                            TextFormField(
                               controller: _emailc,
                               keyboardType: TextInputType.emailAddress,
                               decoration: const InputDecoration(
@@ -169,103 +147,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                   r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$',
                                 ).hasMatch(value)) {
                                   return "Enter a valid Email";
-                                }
-                                return null;
-                              },
-                            ),
-                            const SizedBox(height: 20),
-
-                            TextFormField(
-                              controller: _phonec,
-                              keyboardType: TextInputType.phone,
-                              decoration: const InputDecoration(
-                                labelText: "Phone Number",
-                                prefixIcon: Icon(Icons.phone_rounded),
-                                border: OutlineInputBorder(),
-                              ),
-                              validator: (value) {
-                                if (value == null || value.isEmpty) {
-                                  return "Enter your phone number";
-                                }
-                                if (value.length < 10) {
-                                  return "Enter a valid phone number";
-                                }
-                                return null;
-                              },
-                            ),
-                            const SizedBox(height: 20),
-
-                            TextFormField(
-                              controller: _agec,
-                              keyboardType: TextInputType.number,
-                              decoration: const InputDecoration(
-                                labelText: "Age",
-                                prefixIcon: Icon(Icons.calendar_today_rounded),
-                                border: OutlineInputBorder(),
-                              ),
-                              validator: (value) {
-                                if (value == null || value.isEmpty) {
-                                  return "Enter your age";
-                                }
-                                final age = int.tryParse(value);
-                                if (age == null || age < 1 || age > 120) {
-                                  return "Enter a valid age";
-                                }
-                                return null;
-                              },
-                            ),
-                            const SizedBox(height: 20),
-
-                            DropdownButtonFormField<String>(
-                              value: genderValue,
-                              decoration: const InputDecoration(
-                                labelText: "Gender",
-                                prefixIcon: Icon(Icons.wc_rounded),
-                                border: OutlineInputBorder(),
-                              ),
-                              items: [
-                                DropdownMenuItem(
-                                  value: 'Male',
-                                  child: Text('Male'),
-                                ),
-                                DropdownMenuItem(
-                                  value: 'Female',
-                                  child: Text('Female'),
-                                ),
-                                DropdownMenuItem(
-                                  value: 'Others',
-                                  child: Text('Other'),
-                                ),
-                                DropdownMenuItem(
-                                  value: 'Prefer not to say',
-                                  child: Text('Prefer not to say'),
-                                ),
-                              ],
-                              onChanged: (String? newValue) {
-                                setState(() {
-                                  genderValue = newValue;
-                                });
-                              },
-                              validator: (value) {
-                                if (value == null || value.isEmpty) {
-                                  return "Please select your gender";
-                                }
-                                return null;
-                              },
-                            ),
-                            const SizedBox(height: 20),
-
-                            TextFormField(
-                              controller: _locationc,
-                              keyboardType: TextInputType.streetAddress,
-                              decoration: const InputDecoration(
-                                labelText: "Current Location",
-                                prefixIcon: Icon(Icons.location_on_rounded),
-                                border: OutlineInputBorder(),
-                              ),
-                              validator: (value) {
-                                if (value == null || value.isEmpty) {
-                                  return "Enter your current location";
                                 }
                                 return null;
                               },
@@ -343,7 +224,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                     Navigator.pop(context);
                                   },
                                   child: const Text(
-                                    'Sign in',
+                                    'Log in',
                                     style: TextStyle(
                                       color: Color(0xFFEBA386),
                                       fontSize: 14,
@@ -352,6 +233,44 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                   ),
                                 ),
                               ],
+                            ),
+                            const SizedBox(height: 10),
+                            Row(
+                              children: const [
+                                Expanded(child: Divider(thickness: 1)),
+                                Padding(
+                                  padding: EdgeInsets.symmetric(
+                                    horizontal: 8.0,
+                                  ),
+                                  child: Text("OR"),
+                                ),
+                                Expanded(child: Divider(thickness: 1)),
+                              ],
+                            ),
+                            const SizedBox(height: 16),
+
+                            OutlinedButton.icon(
+                              onPressed: () {},
+                              style: OutlinedButton.styleFrom(
+                                padding: const EdgeInsets.symmetric(
+                                  vertical: 14,
+                                  horizontal: 24,
+                                ),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                              ),
+                              icon: Image.asset(
+                                'assets/google.png',
+                                height: 20,
+                              ),
+                              label: const Text(
+                                "Continue with Google",
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  color: Colors.black87,
+                                ),
+                              ),
                             ),
                           ],
                         ),

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:healthsnap_app/services/authentication_services/auth_layout.dart';
+import 'package:healthsnap_app/screens/in_app_screens/health_assesment_screen.dart';
 import 'package:healthsnap_app/widgets/bulletin.dart';
 
 class OnboardingScreen extends StatefulWidget {
@@ -47,33 +47,9 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                 children: [
                   Image.asset('assets/logo.png', height: 80),
 
-                  Row(
-                    children: [
-                      TextButton(child: Text('About us'), onPressed: () {}),
-                      const SizedBox(width: 12),
-                      ElevatedButton(
-                        onPressed: () {
-                          Navigator.pushReplacement(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => AuthLayout(),
-                            ),
-                          );
-                        },
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color(0xFF1644E8),
-                          shape: const StadiumBorder(),
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 14,
-                            vertical: 8,
-                          ),
-                        ),
-                        child: const Text(
-                          "Let's start →",
-                          style: TextStyle(fontSize: 13, color: Colors.white),
-                        ),
-                      ),
-                    ],
+                  IconButton(
+                    onPressed: () {},
+                    icon: Icon(Icons.menu, color: Colors.white54),
                   ),
                 ],
               ),
@@ -89,7 +65,6 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                 ),
               ),
 
-              // Animated word with fade transition
               AnimatedSwitcher(
                 duration: const Duration(milliseconds: 500),
                 transitionBuilder: (Widget child, Animation<double> animation) {
@@ -134,7 +109,9 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                   onPressed: () {
                     Navigator.pushReplacement(
                       context,
-                      MaterialPageRoute(builder: (context) => AuthLayout()),
+                      MaterialPageRoute(
+                        builder: (context) => HealthAssesmentScreen(),
+                      ),
                     );
                   },
                   style: ElevatedButton.styleFrom(
@@ -146,7 +123,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                     shape: const StadiumBorder(),
                   ),
                   child: const Text(
-                    "Let's start →",
+                    "Start Tracking →",
                     style: TextStyle(
                       fontSize: 16,
                       color: Colors.white,
