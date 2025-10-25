@@ -39,6 +39,7 @@ class SurveySingleOption extends StatelessWidget {
           children: [
             Expanded(
               child: RadioListTile<String>(
+                visualDensity: VisualDensity(horizontal: 6),
                 title: Text(first),
                 value: first,
                 activeColor: Colors.blue,
@@ -50,6 +51,7 @@ class SurveySingleOption extends StatelessWidget {
             ),
             Expanded(
               child: RadioListTile<String>(
+                visualDensity: VisualDensity(horizontal: 6),
                 title: Text(second),
                 value: second,
                 activeColor: Colors.blue,
@@ -62,6 +64,7 @@ class SurveySingleOption extends StatelessWidget {
             if (noOfOptions == 3)
               Expanded(
                 child: RadioListTile<String>(
+                  visualDensity: VisualDensity(horizontal: 6),
                   title: Text(third),
                   value: third,
                   activeColor: Colors.blue,
