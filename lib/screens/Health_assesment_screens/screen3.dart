@@ -1,5 +1,5 @@
 import "package:flutter/material.dart";
-import "package:healthsnap_app/screens/Health_assesment_screens/screen4.dart";
+import "package:healthsnap_app/screens/Health_assesment_screens/screen7.dart";
 import "package:healthsnap_app/widgets/survey3_helper.dart";
 import "package:healthsnap_app/widgets/survey_progress_indicator.dart";
 
@@ -190,44 +190,41 @@ class _SurveyScreenThirdState extends State<SurveyScreenThird> {
 
                       const SizedBox(height: 40),
 
-                      Hero(
-                        tag: "Screen3",
-                        child: ElevatedButton(
-                          onPressed: () {
-                            if (dietType != null &&
-                                sleepQuality != null &&
-                                hydrationLevel != null &&
-                                stressLevel != null &&
-                                smoking != null &&
-                                alcoholIntake != null) {
-                              print('All questions answered!');
-                              print('Diet: $dietType');
-                              print('Sleep: $sleepQuality');
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => SurveyScreenFourth(),
-                                ),
-                              );
-                            } else {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(
-                                  content: Text('Please answer all questions'),
-                                ),
-                              );
-                            }
-                          },
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.blue,
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 40,
-                              vertical: 12,
-                            ),
+                      ElevatedButton(
+                        onPressed: () {
+                          if (dietType != null &&
+                              sleepQuality != null &&
+                              hydrationLevel != null &&
+                              stressLevel != null &&
+                              smoking != null &&
+                              alcoholIntake != null) {
+                            print('All questions answered!');
+                            print('Diet: $dietType');
+                            print('Sleep: $sleepQuality');
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => SurveyScreenSeven(),
+                              ),
+                            );
+                          } else {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Text('Please answer all questions'),
+                              ),
+                            );
+                          }
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.blue,
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 40,
+                            vertical: 12,
                           ),
-                          child: const Text(
-                            'Next',
-                            style: TextStyle(color: Colors.white),
-                          ),
+                        ),
+                        child: const Text(
+                          'Next',
+                          style: TextStyle(color: Colors.white),
                         ),
                       ),
                     ],

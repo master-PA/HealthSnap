@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:healthsnap_app/screens/main_screens/dashboard.dart';
-import 'package:healthsnap_app/widgets/survey4_helper.dart';
+import 'package:healthsnap_app/screens/Health_assesment_screens/screen5.dart';
 import 'package:healthsnap_app/widgets/survey_progress_indicator.dart';
 
 class SurveyScreenFourth extends StatefulWidget {
@@ -11,169 +10,240 @@ class SurveyScreenFourth extends StatefulWidget {
 }
 
 class _SurveyScreenFourthState extends State<SurveyScreenFourth> {
-  final TextEditingController _symptomC = TextEditingController();
-  final TextEditingController _stepsC = TextEditingController();
-  final TextEditingController _waterC = TextEditingController();
-  final TextEditingController _sleepC = TextEditingController();
-  final TextEditingController _heartC = TextEditingController();
-  final TextEditingController _bmiC = TextEditingController();
-  final TextEditingController _mentalC = TextEditingController();
-  final TextEditingController _calorieC = TextEditingController();
+  final Map<String, bool> symptoms = {
+    'Headache': false,
+    'Muscle pain': false,
+    'Dizzy': false,
+    'Fatigue': false,
+    'Fever': false,
+    'Vomiting': false,
+  };
+
+  final TextEditingController _otherSymptomController = TextEditingController();
 
   @override
   void dispose() {
+    _otherSymptomController.dispose();
     super.dispose();
-    _symptomC.dispose();
-    _stepsC.dispose();
-    _waterC.dispose();
-    _sleepC.dispose();
-    _heartC.dispose();
-    _bmiC.dispose();
-    _mentalC.dispose();
-    _calorieC.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      body: Hero(
-        tag: "Screen3",
-        child: Column(
-          children: [
-            Container(
-              color: const Color(0xFFEE9B7B),
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-              child: SafeArea(
-                bottom: false,
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      body: Column(
+        children: [
+          Container(
+            color: const Color(0xFFEE9B7B),
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            child: SafeArea(
+              bottom: false,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Image.asset('assets/logo.png', height: 80),
+                  Row(
+                    children: [
+                      TextButton(
+                        onPressed: () {},
+                        child: const Text(
+                          'Re-evaluate',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 16,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      TextButton(
+                        onPressed: () => Navigator.pop(context),
+                        child: const Text(
+                          'Back',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 16,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      IconButton(
+                        onPressed: () {},
+                        icon: const Icon(
+                          Icons.menu,
+                          color: Colors.white,
+                          size: 28,
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          ),
+          Expanded(
+            child: SingleChildScrollView(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 24,
+                  vertical: 24,
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Image.asset('assets/logo.png', height: 80),
+                    const SizedBox(height: 20),
+                    const SurveyProgressIndicator(currentStep: 2),
+                    const SizedBox(height: 20),
+                    const Text(
+                      'Select any symptoms person is experiencing today',
+                      style: TextStyle(
+                        fontSize: 24,
+                        fontWeight: FontWeight.w600,
+                        color: Colors.black87,
+                      ),
+                    ),
+                    const SizedBox(height: 32),
+
+                    GridView.count(
+                      shrinkWrap: true,
+                      physics: const NeverScrollableScrollPhysics(),
+                      crossAxisCount: 2,
+                      crossAxisSpacing: 20,
+                      mainAxisSpacing: 16,
+                      childAspectRatio: 4,
+                      children: symptoms.keys.map((symptom) {
+                        return GestureDetector(
+                          onTap: () {
+                            setState(() {
+                              symptoms[symptom] = !symptoms[symptom]!;
+                            });
+                          },
+                          child: Row(
+                            children: [
+                              Container(
+                                width: 24,
+                                height: 24,
+                                decoration: BoxDecoration(
+                                  color: symptoms[symptom]!
+                                      ? const Color(0xFF2563EB)
+                                      : Colors.grey[300],
+                                  borderRadius: BorderRadius.circular(4),
+                                  border: Border.all(
+                                    color: symptoms[symptom]!
+                                        ? const Color(0xFF2563EB)
+                                        : Colors.grey[400]!,
+                                    width: 2,
+                                  ),
+                                ),
+                                child: symptoms[symptom]!
+                                    ? const Icon(
+                                        Icons.check,
+                                        color: Colors.white,
+                                        size: 16,
+                                      )
+                                    : null,
+                              ),
+                              const SizedBox(width: 12),
+
+                              Expanded(
+                                child: Text(
+                                  symptom,
+                                  style: const TextStyle(
+                                    fontSize: 16,
+                                    color: Colors.black87,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        );
+                      }).toList(),
+                    ),
+
+                    const SizedBox(height: 20),
                     Row(
                       children: [
-                        TextButton(
-                          onPressed: () => Navigator.pop(context),
-                          child: const Text(
-                            'Back',
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 16,
-                              fontWeight: FontWeight.w500,
+                        const Text(
+                          'Other symptom(if any) :',
+                          style: TextStyle(fontSize: 16, color: Colors.black87),
+                        ),
+                        const SizedBox(width: 16),
+                        Expanded(
+                          child: TextField(
+                            controller: _otherSymptomController,
+                            decoration: InputDecoration(
+                              hintText: 'Type here',
+                              hintStyle: TextStyle(color: Colors.grey[400]),
+                              contentPadding: const EdgeInsets.symmetric(
+                                horizontal: 16,
+                                vertical: 12,
+                              ),
+                              border: const UnderlineInputBorder(
+                                borderSide: BorderSide(color: Colors.black54),
+                              ),
+                              enabledBorder: const UnderlineInputBorder(
+                                borderSide: BorderSide(color: Colors.black54),
+                              ),
+                              focusedBorder: const UnderlineInputBorder(
+                                borderSide: BorderSide(
+                                  color: Color(0xFF2563EB),
+                                  width: 2,
+                                ),
+                              ),
                             ),
                           ),
                         ),
-                        const SizedBox(width: 8),
-                        IconButton(
-                          onPressed: () {},
-                          icon: const Icon(
-                            Icons.menu,
-                            color: Colors.white,
-                            size: 28,
+                      ],
+                    ),
+                    const SizedBox(height: 32),
+                    Align(
+                      alignment: Alignment.centerRight,
+                      child: ElevatedButton(
+                        onPressed: () {
+                          List<String> selectedSymptoms = symptoms.entries
+                              .where((entry) => entry.value)
+                              .map((entry) => entry.key)
+                              .toList();
+
+                          if (_otherSymptomController.text.isNotEmpty) {
+                            selectedSymptoms.add(_otherSymptomController.text);
+                          }
+
+                          print('Selected symptoms: $selectedSymptoms');
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => SurveyScreenFive(),
+                            ),
+                          );
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: const Color(0xFF2563EB),
+                          foregroundColor: Colors.white,
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 32,
+                            vertical: 16,
+                          ),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8),
                           ),
                         ),
-                      ],
+                        child: const Text(
+                          'Next ->',
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ),
                     ),
                   ],
                 ),
               ),
             ),
-
-            Expanded(
-              child: SingleChildScrollView(
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 24,
-                    vertical: 24,
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const SizedBox(height: 20),
-                      SurveyProgressIndicator(currentStep: 3),
-                      const SizedBox(height: 20),
-                      Text('How is your score?'),
-                      const SizedBox(height: 16),
-                      SurveyTextField(
-                        title: "Symptom Severity",
-                        controller: _symptomC,
-                        hinttext: "e.g., None,mild,moderate,severe",
-                        keyboardtype: TextInputType.text,
-                      ),
-                      const SizedBox(height: 16),
-                      SurveyTextField(
-                        title: "Steps Walked",
-                        controller: _stepsC,
-                        hinttext: "e.g., 7,500 steps today",
-                      ),
-                      const SizedBox(height: 16),
-                      SurveyTextField(
-                        title: "Water Intake",
-                        controller: _waterC,
-                        hinttext: "e.g., 2.5 litres or 8 glasses",
-                      ),
-                      const SizedBox(height: 16),
-                      SurveyTextField(
-                        title: "Sleep Hours",
-                        controller: _sleepC,
-                        hinttext: "e.g., slept for 7 hours last night",
-                      ),
-                      const SizedBox(height: 16),
-                      SurveyTextField(
-                        title: "Average Heart Beat",
-                        controller: _heartC,
-                        hinttext: "e.g., 78 bpm (beats per minute)",
-                      ),
-                      const SizedBox(height: 16),
-                      SurveyTextField(
-                        title: "BMI (Body Mass Index)",
-                        controller: _bmiC,
-                        hinttext: "e.g., 23.4 (Normal range)",
-                      ),
-                      const SizedBox(height: 16),
-                      SurveyTextField(
-                        title: "Mental wellbeing score",
-                        controller: _mentalC,
-                        hinttext: "e.g., Feeling relaxed or focussed (8/10)",
-                        keyboardtype: TextInputType.text,
-                      ),
-                      const SizedBox(height: 16),
-                      SurveyTextField(
-                        title: "Calorie Intake",
-                        controller: _calorieC,
-                        hinttext: "e.g., 1,950 kcal today",
-                      ),
-                      const SizedBox(height: 40),
-
-                      ElevatedButton(
-                        onPressed: () {
-                          Navigator.pushAndRemoveUntil(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => DashboardScreen(),
-                            ),
-                            (Route<dynamic> route) => false,
-                          );
-                        },
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.blue,
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 40,
-                            vertical: 12,
-                          ),
-                        ),
-                        child: const Text(
-                          'Next',
-                          style: TextStyle(color: Colors.white),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }

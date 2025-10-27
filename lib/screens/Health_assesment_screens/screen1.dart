@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:healthsnap_app/screens/Health_assesment_screens/screen2.dart';
 import 'package:healthsnap_app/widgets/survey1_card.dart';
+import 'package:healthsnap_app/widgets/survey_progress_indicator.dart';
 
 class SurveyScreenFirst extends StatefulWidget {
   const SurveyScreenFirst({super.key});
@@ -31,6 +32,18 @@ class _SurveyScreenFirstState extends State<SurveyScreenFirst> {
                     Image.asset('assets/logo.png', height: 80),
                     Row(
                       children: [
+                        TextButton(
+                          onPressed: () {},
+                          child: const Text(
+                            'Re-evaluate',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 16,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 8),
                         TextButton(
                           onPressed: () => Navigator.pop(context),
                           child: const Text(
@@ -69,14 +82,7 @@ class _SurveyScreenFirstState extends State<SurveyScreenFirst> {
                   children: [
                     const SizedBox(height: 20),
 
-                    const Text(
-                      '👋 Hey User !',
-                      style: TextStyle(
-                        fontSize: 24,
-                        fontWeight: FontWeight.w600,
-                        color: Colors.black87,
-                      ),
-                    ),
+                    SurveyProgressIndicator(currentStep: 1),
                     const SizedBox(height: 60),
 
                     const Text(

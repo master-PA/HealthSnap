@@ -12,6 +12,8 @@ class SurveyScreenSecond extends StatefulWidget {
 }
 
 class _SurveyScreenSecondState extends State<SurveyScreenSecond> {
+  final TextEditingController _nameC = TextEditingController();
+  final TextEditingController _relationC = TextEditingController();
   final TextEditingController _dayC = TextEditingController();
   final TextEditingController _monthC = TextEditingController();
   final TextEditingController _yearC = TextEditingController();
@@ -23,6 +25,7 @@ class _SurveyScreenSecondState extends State<SurveyScreenSecond> {
 
   @override
   void dispose() {
+    _nameC.dispose();
     _dayC.dispose();
     _monthC.dispose();
     _yearC.dispose();
@@ -53,6 +56,18 @@ class _SurveyScreenSecondState extends State<SurveyScreenSecond> {
                     Image.asset('assets/logo.png', height: 80),
                     Row(
                       children: [
+                        TextButton(
+                          onPressed: () {},
+                          child: const Text(
+                            'Re-evaluate',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 16,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 8),
                         TextButton(
                           onPressed: () => Navigator.pop(context),
                           child: const Text(
@@ -95,6 +110,22 @@ class _SurveyScreenSecondState extends State<SurveyScreenSecond> {
                       const Text(
                         'For Better Tracking, Please provide us few more details',
                         style: TextStyle(fontSize: 20),
+                      ),
+                      const SizedBox(height: 16),
+                      ListTile(
+                        leading: const Icon(Icons.text_fields_outlined),
+                        title: const Text(
+                          'Your Name',
+                          style: TextStyle(color: Colors.grey),
+                        ),
+                        subtitle: SizedBox(
+                          width: 200,
+                          child: TextFormField(
+                            keyboardType: TextInputType.name,
+                            controller: _nameC,
+                            decoration: _inputDecoration("Enter name"),
+                          ),
+                        ),
                       ),
                       const SizedBox(height: 16),
                       ValueListenableBuilder<String?>(
@@ -189,6 +220,24 @@ class _SurveyScreenSecondState extends State<SurveyScreenSecond> {
                               icon: const Icon(Icons.calendar_month),
                             ),
                           ],
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+                      ListTile(
+                        leading: const Icon(Icons.people),
+                        title: const Text(
+                          'Relationship',
+                          style: TextStyle(color: Colors.grey),
+                        ),
+                        subtitle: SizedBox(
+                          width: 200,
+                          child: TextFormField(
+                            keyboardType: TextInputType.name,
+                            controller: _relationC,
+                            decoration: _inputDecoration(
+                              "eg., Brother, Sister",
+                            ),
+                          ),
                         ),
                       ),
                       const SizedBox(height: 16),

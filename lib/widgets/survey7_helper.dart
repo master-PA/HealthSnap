@@ -24,6 +24,7 @@ class SurveyTextField extends StatelessWidget {
           keyboardType: keyboardtype,
           controller: controller,
           decoration: InputDecoration(
+            focusColor: Colors.blue,
             filled: true,
             fillColor: Colors.grey[200],
             border: OutlineInputBorder(

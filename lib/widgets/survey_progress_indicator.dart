@@ -46,7 +46,7 @@ class SurveyProgressIndicator extends StatelessWidget {
 
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [Text('Introduction'), Text('Tracking'), Text('Result')],
+          children: [Text('Information'), Text('Tracking'), Text('Advice')],
         ),
       ],
     );
