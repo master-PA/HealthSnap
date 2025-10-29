@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:healthsnap_app/screens/authentication_screens/login_screen.dart';
-import 'package:healthsnap_app/screens/in_app_screens/start_tracking.dart';
+import 'package:healthsnap_app/services/authentication_services/auth_services.dart';
 import 'package:healthsnap_app/widgets/loading_widget.dart';
 
 class RegisterScreen extends StatefulWidget {
@@ -17,6 +17,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
   final _formKey = GlobalKey<FormState>();
   final ValueNotifier<bool> isVisible1 = ValueNotifier(false);
   final ValueNotifier<bool> isVisible2 = ValueNotifier(false);
+  final _authService = AuthService();
+  bool _isLoading = false;
 
   @override
   void dispose() {
@@ -27,66 +29,54 @@ class _RegisterScreenState extends State<RegisterScreen> {
     super.dispose();
   }
 
-  void register() async {
-    if (_formKey.currentState!.validate()) {
-      // try {
-      //   showDialog(
-      //     context: context,
-      //     barrierDismissible: false,
-      //     builder: (context) =>
-      //         const Center(child: LoadingWidget()),
-      //   );
+  Future<void> register() async {
+    if (!_formKey.currentState!.validate()) return;
 
-      //   await authService.value.createAccount(
-      //     email: _emailc.text,
-      //     password: _passwordc.text,
-      //   );
+    setState(() => _isLoading = true);
 
-      // if (_fullNamec.text.isNotEmpty) {
-      //   await authService.value.updateUsername(username: _fullNamec.text);
-      // }
-
-      showDialog(
-        context: context,
-        barrierDismissible: false,
-        builder: (context) => const Center(child: LoadingWidget()),
+    try {
+      final result = await _authService.register(
+        fullname: _fullNamec.text.trim(),
+        email: _emailc.text.trim(),
+        password: _passwordc.text,
       );
 
-      await Future.delayed(const Duration(seconds: 1));
+      setState(() => _isLoading = false);
 
-      if (mounted) {
-        Navigator.of(context).pop();
-      }
+      if (!mounted) return;
 
-      if (mounted) {
+      if (result['success']) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Account created successfully! Please login.'),
+            backgroundColor: Colors.green,
+            duration: Duration(seconds: 3),
+          ),
+        );
+
         Navigator.of(context).pushReplacement(
-          MaterialPageRoute(builder: (context) => const StartTrackingScreen()),
+          MaterialPageRoute(builder: (context) => const LoginScreen()),
+        );
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(result['message'] ?? 'Registration failed'),
+            backgroundColor: Colors.red,
+            duration: const Duration(seconds: 4),
+          ),
         );
       }
+    } catch (e) {
+      setState(() => _isLoading = false);
 
-      // } on FirebaseAuthException catch (e) {
-      //   if (mounted) {
-      //     Navigator.of(context).pop();
-      //     ScaffoldMessenger.of(context).showSnackBar(
-      //       SnackBar(
-      //         content: Text(
-      //           e.message ?? 'An error occurred during registration',
-      //         ),
-      //         backgroundColor: Colors.red,
-      //       ),
-      //     );
-      //   }
-      // } catch (e) {
-      //   if (mounted) {
-      //     Navigator.of(context).pop();
-      //     ScaffoldMessenger.of(context).showSnackBar(
-      //       const SnackBar(
-      //         content: Text('An unexpected error occurred'),
-      //         backgroundColor: Colors.red,
-      //       ),
-      //     );
-      //   }
-      // }
+      if (!mounted) return;
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('An unexpected error occurred: $e'),
+          backgroundColor: Colors.red,
+        ),
+      );
     }
   }
 
@@ -97,7 +87,11 @@ class _RegisterScreenState extends State<RegisterScreen> {
       body: Column(
         children: [
           Container(
-            color: const Color(0xFFEE9B7B),
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                colors: [Colors.orange[100]!, Colors.orange],
+              ),
+            ),
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
             child: SafeArea(
               bottom: false,
@@ -385,7 +379,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                   child: SizedBox(
                                     width: double.infinity,
                                     child: ElevatedButton(
-                                      onPressed: register,
+                                      onPressed: _isLoading ? null : register,
                                       style: ElevatedButton.styleFrom(
                                         backgroundColor: const Color(
                                           0xFF4285F4,
@@ -400,14 +394,16 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                         ),
                                         elevation: 0,
                                       ),
-                                      child: const Text(
-                                        "Sign Up",
-                                        style: TextStyle(
-                                          color: Colors.white,
-                                          fontSize: 16,
-                                          fontWeight: FontWeight.w500,
-                                        ),
-                                      ),
+                                      child: _isLoading
+                                          ? LoadingWidget()
+                                          : const Text(
+                                              "Sign Up",
+                                              style: TextStyle(
+                                                color: Colors.white,
+                                                fontSize: 16,
+                                                fontWeight: FontWeight.w500,
+                                              ),
+                                            ),
                                     ),
                                   ),
                                 ),
@@ -486,9 +482,20 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                 const SizedBox(height: 16),
 
                                 OutlinedButton.icon(
-                                  onPressed: () {
-                                    register();
-                                  },
+                                  onPressed: _isLoading
+                                      ? null
+                                      : () {
+                                          ScaffoldMessenger.of(
+                                            context,
+                                          ).showSnackBar(
+                                            const SnackBar(
+                                              content: Text(
+                                                'Google Sign-In coming soon!',
+                                              ),
+                                              duration: Duration(seconds: 2),
+                                            ),
+                                          );
+                                        },
                                   style: OutlinedButton.styleFrom(
                                     padding: const EdgeInsets.symmetric(
                                       vertical: 14,

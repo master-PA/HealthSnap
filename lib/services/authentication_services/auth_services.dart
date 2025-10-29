@@ -1,75 +1,125 @@
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/material.dart';
+import 'dart:convert';
 
-ValueNotifier<AuthService> authService = ValueNotifier(AuthService());
+import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
 
 class AuthService {
-  final FirebaseAuth firebaseAuth = FirebaseAuth.instance;
+  static const String baseUrl = 'https://healthsnap-68ry.onrender.com/api';
 
-  User? get currentUser {
-    return firebaseAuth.currentUser;
-  }
-
-  Stream<User?> get authStateChanges {
-    return firebaseAuth.authStateChanges();
-  }
-
-  Future<UserCredential> signIn({
+  Future<Map<String, dynamic>> register({
+    required String fullname,
     required String email,
     required String password,
   }) async {
-    return await firebaseAuth.signInWithEmailAndPassword(
-      email: email,
-      password: password,
-    );
+    try {
+      final respose = await http.post(
+        Uri.parse('$baseUrl/auth/register'),
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode({
+          'fullname': fullname,
+          'email': email,
+          'password': password,
+        }),
+      );
+      if (respose.statusCode == 201) {
+        return {'success': true, 'data': jsonDecode(respose.body)};
+      } else {
+        return {
+          'success': false,
+          'message': 'Registration failed: ${respose.body}',
+        };
+      }
+    } catch (e) {
+      return {'success': false, 'message': 'Error: $e'};
+    }
   }
 
-  Future<UserCredential> createAccount({
+  Future<Map<String, dynamic>> login({
     required String email,
     required String password,
   }) async {
-    return await firebaseAuth.createUserWithEmailAndPassword(
-      email: email,
-      password: password,
-    );
+    try {
+      final response = await http.post(
+        Uri.parse('$baseUrl/auth/login'),
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode({'email': email, 'password': password}),
+      );
+
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+
+        await saveToken(data['token']);
+        await saveUserId(data['_id']);
+
+        return {'success': true, 'data': data};
+      } else {
+        return {'success': false, 'message': 'Login failed: ${response.body}'};
+      }
+    } catch (e) {
+      return {'success': false, 'message': 'Error: $e'};
+    }
   }
 
-  Future<void> signOut() async {
-    return await firebaseAuth.signOut();
+  Future<void> saveToken(String token) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString('auth_token', token);
   }
 
-  Future<void> forgotPassword({required String email}) async {
-    return await firebaseAuth.sendPasswordResetEmail(email: email);
+  Future<void> saveUserId(String userId) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString('user_id', userId);
   }
 
-  Future<void> updateUsername({required String username}) async {
-    await currentUser!.updateDisplayName(username);
-    await currentUser!.reload();
+  Future<String?> getToken() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getString('auth_token');
   }
 
-  Future<void> deleteAccount({
-    required String email,
-    required String password,
+  Future<String?> getUserId() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getString('user_id');
+  }
+
+  Future<bool> isLoggedIn() async {
+    final token = await getToken();
+    return token != null && token.isNotEmpty;
+  }
+
+  Future<void> logout() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.remove('auth_token');
+    await prefs.remove('user_id');
+  }
+
+  Future<Map<String, dynamic>> updateProfile({
+    required Map<String, dynamic> profileData,
   }) async {
-    final credential = EmailAuthProvider.credential(
-      email: email,
-      password: password,
-    );
-    await currentUser!.reauthenticateWithCredential(credential);
-    await currentUser!.delete();
-    await firebaseAuth.signOut();
-  }
+    try {
+      final token = await getToken();
 
-  Future<void> updatePassword({
-    required String email,
-    required String oldPassword,
-    required String newPassword,
-  }) async {
-    final credential = EmailAuthProvider.credential(
-      email: email,
-      password: oldPassword,
-    );
-    await currentUser!.reauthenticateWithCredential(credential);
-    await currentUser!.updatePassword(newPassword);
+      if (token == null) {
+        return {'success': false, 'message': 'No authentication token found'};
+      }
+
+      final response = await http.post(
+        Uri.parse('$baseUrl/profile'),
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $token',
+        },
+        body: jsonEncode(profileData),
+      );
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        return {'success': true, 'data': jsonDecode(response.body)};
+      } else {
+        return {
+          'success': false,
+          'message': 'Profile update failed: ${response.body}',
+        };
+      }
+    } catch (e) {
+      return {'success': false, 'message': 'Error: $e'};
+    }
   }
 }

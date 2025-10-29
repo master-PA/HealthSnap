@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:healthsnap_app/screens/main_screens/dashboard.dart';
+import 'package:healthsnap_app/screens/main_screens/home.dart';
 import 'package:healthsnap_app/widgets/survey7_helper.dart';
 import 'package:healthsnap_app/widgets/survey_progress_indicator.dart';
 
@@ -40,7 +40,11 @@ class _SurveyScreenSevenState extends State<SurveyScreenSeven> {
       body: Column(
         children: [
           Container(
-            color: const Color(0xFFEE9B7B),
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                colors: [Colors.orange[100]!, Colors.orange],
+              ),
+            ),
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
             child: SafeArea(
               bottom: false,
@@ -147,9 +151,7 @@ class _SurveyScreenSevenState extends State<SurveyScreenSeven> {
                       onPressed: () {
                         Navigator.pushAndRemoveUntil(
                           context,
-                          MaterialPageRoute(
-                            builder: (context) => DashboardScreen(),
-                          ),
+                          MaterialPageRoute(builder: (context) => HomeScreen()),
                           (Route<dynamic> route) => false,
                         );
                       },

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:healthsnap_app/screens/authentication_screens/forgot_password.dart';
-import 'package:healthsnap_app/screens/main_screens/dashboard.dart';
+import 'package:healthsnap_app/screens/main_screens/home.dart';
+import 'package:healthsnap_app/services/authentication_services/auth_services.dart';
 import 'package:healthsnap_app/widgets/loading_widget.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -15,6 +16,8 @@ class _LoginScreenState extends State<LoginScreen> {
   final TextEditingController _passwordc = TextEditingController();
   final _formKey = GlobalKey<FormState>();
   final ValueNotifier<bool> isVisible = ValueNotifier(false);
+  bool _isLoading = false;
+  final _authService = AuthService();
 
   @override
   void dispose() {
@@ -24,27 +27,38 @@ class _LoginScreenState extends State<LoginScreen> {
     super.dispose();
   }
 
-  void logIn() async {
-    if (_formKey.currentState!.validate()) {
-      // authService.value.signIn(email: _emailc.text, password: _passwordc.text);
+  Future<void> logIn() async {
+    if (!_formKey.currentState!.validate()) return;
 
-      showDialog(
-        context: context,
-        barrierDismissible: false,
-        builder: (context) => const Center(child: LoadingWidget()),
+    setState(() => _isLoading = true);
+
+    final result = await _authService.login(
+      email: _emailc.text.trim(),
+      password: _passwordc.text,
+    );
+
+    setState(() => _isLoading = false);
+
+    if (!mounted) return;
+
+    if (result['success']) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Login successful!'),
+          backgroundColor: Colors.green,
+        ),
       );
 
-      await Future.delayed(const Duration(seconds: 1));
-
-      if (mounted) {
-        Navigator.of(context).pop();
-      }
-
-      if (mounted) {
-        Navigator.of(context).pushReplacement(
-          MaterialPageRoute(builder: (context) => const DashboardScreen()),
-        );
-      }
+      Navigator.of(context).pushReplacement(
+        MaterialPageRoute(builder: (context) => const HomeScreen()),
+      );
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(result['message'] ?? 'Login failed'),
+          backgroundColor: Colors.red,
+        ),
+      );
     }
   }
 
@@ -57,7 +71,11 @@ class _LoginScreenState extends State<LoginScreen> {
         child: Column(
           children: [
             Container(
-              color: const Color(0xFFEE9B7B),
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [Colors.orange[100]!, Colors.orange],
+                ),
+              ),
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
               child: SafeArea(
                 bottom: false,
@@ -236,7 +254,6 @@ class _LoginScreenState extends State<LoginScreen> {
                                   SizedBox(
                                     width: double.infinity,
                                     child: ElevatedButton(
-                                      onPressed: logIn,
                                       style: ElevatedButton.styleFrom(
                                         backgroundColor: const Color(
                                           0xFF4285F4,
@@ -251,14 +268,22 @@ class _LoginScreenState extends State<LoginScreen> {
                                         ),
                                         elevation: 0,
                                       ),
-                                      child: const Text(
-                                        "Sign in",
-                                        style: TextStyle(
-                                          color: Colors.white,
-                                          fontSize: 16,
-                                          fontWeight: FontWeight.w500,
-                                        ),
-                                      ),
+
+                                      onPressed: _isLoading ? null : logIn,
+                                      child: _isLoading
+                                          ? const SizedBox(
+                                              height: 20,
+                                              width: 20,
+                                              child: LoadingWidget(),
+                                            )
+                                          : const Text(
+                                              "Sign in",
+                                              style: TextStyle(
+                                                color: Colors.white,
+                                                fontSize: 16,
+                                                fontWeight: FontWeight.w500,
+                                              ),
+                                            ),
                                     ),
                                   ),
                                   const SizedBox(height: 12),
@@ -325,7 +350,15 @@ class _LoginScreenState extends State<LoginScreen> {
 
                                   OutlinedButton.icon(
                                     onPressed: () {
-                                      logIn();
+                                      ScaffoldMessenger.of(
+                                        context,
+                                      ).showSnackBar(
+                                        const SnackBar(
+                                          content: Text(
+                                            'Google Sign-In coming soon!',
+                                          ),
+                                        ),
+                                      );
                                     },
                                     style: OutlinedButton.styleFrom(
                                       padding: const EdgeInsets.symmetric(

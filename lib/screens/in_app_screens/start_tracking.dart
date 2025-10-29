@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:healthsnap_app/screens/Health_assesment_screens/screen1.dart';
-import 'package:healthsnap_app/screens/main_screens/dashboard.dart';
+import 'package:healthsnap_app/screens/main_screens/home.dart';
 import 'package:healthsnap_app/widgets/bulletin.dart';
 
 class StartTrackingScreen extends StatefulWidget {
@@ -42,7 +42,11 @@ class _StartTrackingScreenState extends State<StartTrackingScreen> {
         child: Column(
           children: [
             Container(
-              color: const Color(0xFFEE9B7B),
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [Colors.orange[100]!, Colors.orange],
+                ),
+              ),
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
               child: SafeArea(
                 bottom: false,
@@ -158,7 +162,7 @@ class _StartTrackingScreenState extends State<StartTrackingScreen> {
                             elevation: 0,
                           ),
                           child: const Text(
-                            "Start Tracking →",
+                            "Start →",
                             style: TextStyle(
                               fontSize: 16,
                               color: Colors.white,
@@ -177,7 +181,7 @@ class _StartTrackingScreenState extends State<StartTrackingScreen> {
                           Navigator.pushAndRemoveUntil(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => DashboardScreen(),
+                              builder: (context) => HomeScreen(),
                             ),
                             (Route<dynamic> route) => false,
                           );
@@ -194,7 +198,7 @@ class _StartTrackingScreenState extends State<StartTrackingScreen> {
                           backgroundColor: Colors.white,
                         ),
                         child: const Text(
-                          'Skip',
+                          'View Trends',
                           style: TextStyle(
                             fontSize: 16,
                             color: Colors.black87,

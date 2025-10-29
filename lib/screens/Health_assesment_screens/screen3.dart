@@ -27,7 +27,11 @@ class _SurveyScreenThirdState extends State<SurveyScreenThird> {
         child: Column(
           children: [
             Container(
-              color: const Color(0xFFEE9B7B),
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [Colors.orange[100]!, Colors.orange],
+                ),
+              ),
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
               child: SafeArea(
                 bottom: false,
