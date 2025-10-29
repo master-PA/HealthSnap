@@ -9,7 +9,7 @@ import joblib
 app = Flask(__name__)
 
 # Load model and preprocessors
-model = load_model("symptom_cnn_lstm_model.h5")
+model = load_model("symptom_cnn_lstm_model.keras")
 scaler = joblib.load("scaler.pkl")
 label_encoder = joblib.load("label_encoder.pkl")
 
