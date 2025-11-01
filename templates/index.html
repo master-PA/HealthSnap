@@ -1,26 +1,159 @@
 <!DOCTYPE html>
-<html>
-<head><title>HealthSnap Predictor</title></head>
-<body style="font-family: sans-serif; text-align: center;">
-  <h2>🩺 Health Pattern Predictor</h2>
-  <form id="form">
-    <textarea id="data" rows="10" cols="50" placeholder="Enter 10 days of symptom data..."></textarea><br><br>
-    <button type="submit">Predict</button>
-  </form>
-  <h3 id="result"></h3>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>HealthSnap Predictor</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" />
+  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+</head>
+
+<body class="bg-gray-100 min-h-screen flex items-center justify-center">
+  <div class="bg-white shadow-xl rounded-2xl p-8 w-full max-w-3xl">
+    <h1 class="text-3xl font-bold text-center text-indigo-600 mb-6">
+      🩺 HealthSnap: Symptom Pattern Predictor
+    </h1>
+
+    <!-- Dropdown for selecting test type -->
+    <div class="mb-4 flex justify-between">
+      <div>
+        <label class="block text-gray-600 font-medium">Select Test Case</label>
+        <select id="testType" class="border rounded-lg p-2 w-48">
+          <option value="none">— Manual Input —</option>
+          <option value="stable">Stable</option>
+          <option value="improving">Improving</option>
+          <option value="worsening">Worsening</option>
+        </select>
+      </div>
+
+      <div>
+        <label class="block text-gray-600 font-medium">Days of Data</label>
+        <select id="numDays" class="border rounded-lg p-2 w-32">
+          <option value="2">2 Days</option>
+          <option value="3">3 Days</option>
+          <option value="5">5 Days</option>
+          <option value="7">7 Days</option>
+          <option value="10" selected>10 Days</option>
+        </select>
+      </div>
+
+      <button
+        onclick="fillExampleData()"
+        class="bg-indigo-500 hover:bg-indigo-600 text-white font-semibold rounded-lg px-4 py-2 mt-6"
+      >
+        Load Example
+      </button>
+    </div>
+
+    <!-- JSON Input -->
+    <label class="block text-gray-600 font-medium mb-2">Symptom Data (JSON Format)</label>
+    <textarea
+      id="inputData"
+      rows="8"
+      class="border border-gray-300 rounded-lg w-full p-3 font-mono text-sm"
+      placeholder='Enter JSON array, e.g. [[1,0,1,...],[2,1,0,...]]'
+    ></textarea>
+
+    <!-- Predict Button -->
+    <div class="flex justify-center mt-6">
+      <button
+        onclick="makePrediction()"
+        class="bg-green-500 hover:bg-green-600 text-white font-semibold rounded-lg px-6 py-2"
+      >
+        Predict
+      </button>
+    </div>
+
+    <!-- Output -->
+    <div id="resultBox" class="hidden mt-8 border-t pt-4 text-center">
+      <h2 class="text-lg font-semibold text-gray-700">Prediction Result</h2>
+      <p id="resultText" class="text-xl font-bold mt-2"></p>
+      <p id="confidenceText" class="text-gray-500"></p>
+    </div>
+
+    <footer class="text-center text-gray-400 mt-6 text-sm">
+      © 2025 HealthSnap — Powered by Flask + TensorFlow
+    </footer>
+  </div>
 
   <script>
-  document.getElementById("form").onsubmit = async (e) => {
-    e.preventDefault();
-    const data = JSON.parse(document.getElementById("data").value);
-    const res = await fetch("/predict", {
-      method: "POST",
-      headers: {"Content-Type": "application/json"},
-      body: JSON.stringify({data})
-    });
-    const out = await res.json();
-    document.getElementById("result").innerText = "Prediction: " + out.prediction + " (" + out.confidence + ")";
-  };
+    // --------------------------------------------
+    // Example Data for Testing
+    // --------------------------------------------
+    const examples = {
+      stable: [
+        [1,0,0,1,0,0,0,1,0,0,1,0,1,0,0,1],
+        [1,0,1,0,0,1,0,1,0,0,1,0,1,0,1,0],
+        [0,0,0,1,1,0,0,1,0,0,0,1,0,0,1,1],
+        [1,0,0,1,0,0,0,1,0,0,1,0,1,0,0,1],
+        [0,0,1,0,0,1,0,1,0,0,0,1,0,0,1,1],
+        [0,0,0,1,1,0,0,1,0,0,0,1,0,0,1,1],
+        [1,0,0,1,0,0,0,1,0,0,1,0,1,0,0,1],
+        [0,0,1,0,0,1,0,1,0,0,0,1,0,0,1,1],
+        [1,0,0,1,0,0,0,1,0,0,1,0,1,0,0,1],
+        [0,0,0,1,1,0,0,1,0,0,0,1,0,0,1,1]
+      ],
+      improving: [
+        [8,8,7,8,9,8,8,9,9,9,8,8,9,8,8,8],
+        [7,7,6,7,8,7,8,8,9,9,7,7,8,8,7,8],
+        [6,6,5,6,7,6,7,7,8,8,6,6,7,7,6,7],
+        [5,5,4,5,6,5,6,6,7,7,5,5,6,6,5,6],
+        [4,4,3,4,5,4,5,5,6,6,4,4,5,5,4,5],
+        [3,3,2,3,4,3,4,4,5,5,3,3,4,4,3,4],
+        [2,2,1,2,3,2,3,3,4,4,2,2,3,3,2,3],
+        [1,1,1,1,2,1,2,2,3,3,1,1,2,2,1,2],
+        [0,0,0,1,1,0,1,1,2,2,0,0,1,1,0,1],
+        [0,0,0,0,0,0,0,0,1,1,0,0,0,0,0,0]
+      ],
+      worsening: [
+        [5,6,4,5,6,5,6,7,8,9,6,5,7,6,6,7],
+        [6,7,5,6,7,6,7,8,9,9,7,6,8,7,7,8],
+        [7,8,6,7,8,7,8,9,9,10,8,7,9,8,8,9],
+        [8,9,7,8,9,8,9,9,9,10,9,8,9,9,9,9],
+        [9,9,8,9,10,9,9,10,10,10,9,9,10,9,9,10],
+        [8,8,7,8,9,8,8,9,9,9,8,8,9,8,8,9],
+        [7,7,6,7,8,7,8,8,9,9,7,7,8,8,7,8],
+        [6,6,5,6,7,6,7,7,8,8,6,6,7,7,6,7],
+        [5,5,4,5,6,5,6,6,7,7,5,5,6,6,5,6],
+        [6,7,8,7,8,7,8,8,9,10,7,7,8,8,8,9]
+      ]
+    };
+
+    // --------------------------------------------
+    // Auto-fill JSON data based on user choice
+    // --------------------------------------------
+    function fillExampleData() {
+      const type = document.getElementById("testType").value;
+      const days = parseInt(document.getElementById("numDays").value);
+      const textarea = document.getElementById("inputData");
+      if (type === "none") {
+        textarea.value = "";
+        return;
+      }
+      textarea.value = JSON.stringify(examples[type].slice(0, days), null, 2);
+    }
+
+    // --------------------------------------------
+    // Send API request
+    // --------------------------------------------
+    async function makePrediction() {
+      const input = document.getElementById("inputData").value;
+      const resultBox = document.getElementById("resultBox");
+      const resultText = document.getElementById("resultText");
+      const confidenceText = document.getElementById("confidenceText");
+
+      try {
+        const parsed = JSON.parse(input);
+        const res = await axios.post("/predict", { data: parsed });
+        resultBox.classList.remove("hidden");
+        resultText.textContent = `Prediction: ${res.data.prediction}`;
+        confidenceText.textContent = `Confidence: ${(res.data.confidence * 100).toFixed(2)}% (Days Provided: ${res.data.days_provided})`;
+      } catch (err) {
+        resultBox.classList.remove("hidden");
+        resultText.textContent = "⚠️ Error: " + (err.response?.data?.error || err.message);
+        confidenceText.textContent = "";
+      }
+    }
   </script>
 </body>
 </html>
