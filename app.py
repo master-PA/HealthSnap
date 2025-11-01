@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, render_template
 from tensorflow.keras.models import load_model
 import numpy as np
 import joblib
@@ -19,7 +19,7 @@ symptoms = [
     "headache", "body_pain", "appetite_loss", "nausea", "stomach_pain",
     "sleep_quality", "mood_swings", "anxiety", "irritability", "concentration_loss"
 ]
-sequence_length = 10  # number of days expected
+max_sequence_length = 10  # model was trained for 10 days
 
 # --------------------------------
 # ROUTES
@@ -35,33 +35,57 @@ def predict():
     Example JSON input:
     {
       "data": [
-        [1.2, 0.8, 0.5, 0.3, ...],  # day 1 symptom values
-        [1.5, 0.7, 0.6, 0.2, ...],  # day 2 ...
+        [1.2, 0.8, 0.5, ...],  # day 1
+        [1.0, 0.7, 0.4, ...],  # day 2
         ...
-        [0.9, 0.5, 0.2, 0.1, ...]   # day 10
       ]
     }
     """
     try:
         req = request.get_json()
-        data = np.array(req["data"])
-        
-        if data.shape != (sequence_length, len(symptoms)):
+        data = np.array(req["data"], dtype=float)
+
+        # Validate feature dimension
+        if data.shape[1] != len(symptoms):
             return jsonify({
-                "error": f"Expected shape ({sequence_length}, {len(symptoms)}) but got {data.shape}"
+                "error": f"Expected {len(symptoms)} features per day, got {data.shape[1]}"
             }), 400
         
-        # Scale data
+        num_days = data.shape[0]
+        if num_days < 2:
+            return jsonify({
+                "error": "At least 2 days of symptom data are required"
+            }), 400
+
+        # --------------------------------
+        # SCALE DATA
+        # --------------------------------
+        # Scale each day using the same scaler (trained on all features)
         data_scaled = scaler.transform(data)
+
+        # --------------------------------
+        # PAD SEQUENCE (if < 10 days)
+        # --------------------------------
+        if num_days < max_sequence_length:
+            pad_len = max_sequence_length - num_days
+            padding = np.zeros((pad_len, len(symptoms)))
+            data_scaled = np.vstack([padding, data_scaled])  # pad at beginning
+
+        elif num_days > max_sequence_length:
+            data_scaled = data_scaled[-max_sequence_length:]  # keep last 10 days
+
         X_input = np.expand_dims(data_scaled, axis=0)  # shape (1, 10, 16)
 
-        # Model prediction
+        # --------------------------------
+        # PREDICTION
+        # --------------------------------
         preds = model.predict(X_input)
         predicted_class = np.argmax(preds, axis=1)[0]
         label = label_encoder.inverse_transform([predicted_class])[0]
-
         confidence = float(np.max(preds))
+
         return jsonify({
+            "days_provided": num_days,
             "prediction": label,
             "confidence": round(confidence, 3)
         })
@@ -69,16 +93,17 @@ def predict():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
-# --------------------------------
-# RUN SERVER
-# --------------------------------
 
-from flask import render_template
-
+# --------------------------------
+# HOME PAGE (HTML)
+# --------------------------------
 @app.route("/")
 def home():
     return render_template("index.html")
 
 
+# --------------------------------
+# RUN SERVER
+# --------------------------------
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000, debug=True)
