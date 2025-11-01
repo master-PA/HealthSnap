@@ -36,7 +36,7 @@ class _SplashScreenState extends State<SplashScreen> {
           duration: const Duration(seconds: 1),
           curve: Curves.easeInOutBack,
           child: Image.asset(
-            'assets/splash.png',
+            'assets/logo.png',
             width: double.infinity,
             height: double.infinity,
             fit: BoxFit.contain,

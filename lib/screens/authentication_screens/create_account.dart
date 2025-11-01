@@ -374,37 +374,30 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                 ),
                                 const SizedBox(height: 24),
 
-                                Hero(
-                                  tag: "to-tacking",
-                                  child: SizedBox(
-                                    width: double.infinity,
-                                    child: ElevatedButton(
-                                      onPressed: _isLoading ? null : register,
-                                      style: ElevatedButton.styleFrom(
-                                        backgroundColor: const Color(
-                                          0xFF4285F4,
-                                        ),
-                                        padding: const EdgeInsets.symmetric(
-                                          vertical: 16,
-                                        ),
-                                        shape: RoundedRectangleBorder(
-                                          borderRadius: BorderRadius.circular(
-                                            8,
-                                          ),
-                                        ),
-                                        elevation: 0,
+                                SizedBox(
+                                  width: double.infinity,
+                                  child: ElevatedButton(
+                                    onPressed: _isLoading ? null : register,
+                                    style: ElevatedButton.styleFrom(
+                                      backgroundColor: const Color(0xFF4285F4),
+                                      padding: const EdgeInsets.symmetric(
+                                        vertical: 16,
                                       ),
-                                      child: _isLoading
-                                          ? LoadingWidget()
-                                          : const Text(
-                                              "Sign Up",
-                                              style: TextStyle(
-                                                color: Colors.white,
-                                                fontSize: 16,
-                                                fontWeight: FontWeight.w500,
-                                              ),
-                                            ),
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(8),
+                                      ),
+                                      elevation: 0,
                                     ),
+                                    child: _isLoading
+                                        ? LoadingWidget()
+                                        : const Text(
+                                            "Sign Up",
+                                            style: TextStyle(
+                                              color: Colors.white,
+                                              fontSize: 16,
+                                              fontWeight: FontWeight.w500,
+                                            ),
+                                          ),
                                   ),
                                 ),
                                 const SizedBox(height: 16),
@@ -419,31 +412,28 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                         color: Colors.grey[600],
                                       ),
                                     ),
-                                    Hero(
-                                      tag: "register-to-login",
-                                      child: TextButton(
-                                        onPressed: () {
-                                          Navigator.push(
-                                            context,
-                                            MaterialPageRoute(
-                                              builder: (context) =>
-                                                  const LoginScreen(),
-                                            ),
-                                          );
-                                        },
-                                        style: TextButton.styleFrom(
-                                          padding: EdgeInsets.zero,
-                                          minimumSize: const Size(0, 0),
-                                          tapTargetSize:
-                                              MaterialTapTargetSize.shrinkWrap,
-                                        ),
-                                        child: const Text(
-                                          'Log in',
-                                          style: TextStyle(
-                                            color: Color(0xFFEA5A47),
-                                            fontSize: 14,
-                                            fontWeight: FontWeight.w500,
+                                    TextButton(
+                                      onPressed: () {
+                                        Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder: (context) =>
+                                                const LoginScreen(),
                                           ),
+                                        );
+                                      },
+                                      style: TextButton.styleFrom(
+                                        padding: EdgeInsets.zero,
+                                        minimumSize: const Size(0, 0),
+                                        tapTargetSize:
+                                            MaterialTapTargetSize.shrinkWrap,
+                                      ),
+                                      child: const Text(
+                                        'Log in',
+                                        style: TextStyle(
+                                          color: Color(0xFFEA5A47),
+                                          fontSize: 14,
+                                          fontWeight: FontWeight.w500,
                                         ),
                                       ),
                                     ),

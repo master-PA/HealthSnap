@@ -5,32 +5,39 @@ class Tip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      height: 60,
-      width: 400,
-      child: Container(
-        padding: EdgeInsets.all(16),
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(16),
-          gradient: LinearGradient(
-            colors: [Colors.lightBlue[50]!, Colors.lightBlue[100]!],
-          ),
-          border: BoxBorder.all(
-            color: Color(0xFF105BBB),
-            width: 2,
-            style: BorderStyle.solid,
-          ),
-        ),
-        child: Column(
-          children: [
-            Text('💡 Tip', style: TextStyle(fontSize: 12)),
-            SizedBox(height: 6),
-            Text(
-              "Stay hydrated! Aim for 8 glass of water today ...",
-              style: TextStyle(color: Color(0xFF495A85), fontSize: 10),
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 20),
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: Colors.yellow[50],
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(color: Colors.orange[300]!, width: 1),
+      ),
+      child: const Row(
+        children: [
+          Text('💡', style: TextStyle(fontSize: 20)),
+          SizedBox(width: 8),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Tip',
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 12,
+                    color: Colors.orange,
+                  ),
+                ),
+                SizedBox(height: 2),
+                Text(
+                  'Stay hydrated! Aim for a glass of water today ...',
+                  style: TextStyle(fontSize: 11, color: Colors.black87),
+                ),
+              ],
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }

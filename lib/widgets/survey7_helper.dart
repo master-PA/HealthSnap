@@ -31,7 +31,6 @@ class SurveyTextField extends StatelessWidget {
               borderRadius: BorderRadius.circular(8),
               borderSide: BorderSide.none,
             ),
-
             hintText: hinttext,
             hintStyle: TextStyle(fontStyle: FontStyle.italic),
           ),

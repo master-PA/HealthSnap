@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:healthsnap_app/screens/Health_assesment_screens/screen5.dart';
+import 'package:healthsnap_app/services/database_services/user_profile_Service.dart';
 import 'package:healthsnap_app/widgets/survey_progress_indicator.dart';
 
 class SurveyScreenFourth extends StatefulWidget {
@@ -11,12 +12,22 @@ class SurveyScreenFourth extends StatefulWidget {
 
 class _SurveyScreenFourthState extends State<SurveyScreenFourth> {
   final Map<String, bool> symptoms = {
-    'Headache': false,
-    'Muscle pain': false,
-    'Dizzy': false,
-    'Fatigue': false,
-    'Fever': false,
-    'Vomiting': false,
+    'fever': false,
+    'cough': false,
+    'sore_throat': false,
+    'runny_nose': false,
+    'breath_shortness': false,
+    'fatigue': false,
+    'headache': false,
+    'body_pain': false,
+    'appetite_loss': false,
+    'nausea': false,
+    'stomach_pain': false,
+    'sleep_quality': false,
+    'mood_swings': false,
+    'anxiety': false,
+    'irritability': false,
+    'concentration_loss': false,
   };
 
   final TextEditingController _otherSymptomController = TextEditingController();
@@ -25,6 +36,35 @@ class _SurveyScreenFourthState extends State<SurveyScreenFourth> {
   void dispose() {
     _otherSymptomController.dispose();
     super.dispose();
+  }
+
+  void _saveSymptomsData() {
+    List<String> selectedSymptoms = symptoms.entries
+        .where((entry) => entry.value)
+        .map((entry) => entry.key)
+        .toList();
+
+    if (_otherSymptomController.text.isNotEmpty) {
+      selectedSymptoms.add(_otherSymptomController.text);
+    }
+
+    UserProfileService().updateHealthMetrics(symptoms: selectedSymptoms);
+  }
+
+  void _validateAndProceed() {
+    _saveSymptomsData();
+
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => const SurveyScreenFive()),
+    );
+  }
+
+  String _formatSymptomName(String symptom) {
+    return symptom
+        .split('_')
+        .map((word) => word[0].toUpperCase() + word.substring(1))
+        .join(' ');
   }
 
   @override
@@ -36,51 +76,20 @@ class _SurveyScreenFourthState extends State<SurveyScreenFourth> {
           Container(
             decoration: BoxDecoration(
               gradient: LinearGradient(
-                colors: [Colors.orange[100]!, Colors.orange],
+                colors: [Color(0xFFB3E5FC), Color(0xFF4FC3F7)],
               ),
             ),
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
             child: SafeArea(
               bottom: false,
               child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Image.asset('assets/logo.png', height: 80),
-                  Row(
-                    children: [
-                      TextButton(
-                        onPressed: () {},
-                        child: const Text(
-                          'Re-evaluate',
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 16,
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
-                      ),
-                      const SizedBox(width: 8),
-                      TextButton(
-                        onPressed: () => Navigator.pop(context),
-                        child: const Text(
-                          'Back',
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 16,
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
-                      ),
-                      const SizedBox(width: 8),
-                      IconButton(
-                        onPressed: () {},
-                        icon: const Icon(
-                          Icons.menu,
-                          color: Colors.white,
-                          size: 28,
-                        ),
-                      ),
-                    ],
+                  Image.asset('assets/logo.png', height: 40),
+                  const SizedBox(width: 8),
+                  const Spacer(),
+                  IconButton(
+                    onPressed: () {},
+                    icon: const Icon(Icons.menu, color: Colors.white, size: 28),
                   ),
                 ],
               ),
@@ -96,11 +105,21 @@ class _SurveyScreenFourthState extends State<SurveyScreenFourth> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const SizedBox(height: 20),
+                    TextButton.icon(
+                      onPressed: () => Navigator.pop(context),
+                      icon: const Icon(Icons.arrow_back_ios, size: 16),
+                      label: const Text('Back'),
+                      style: TextButton.styleFrom(
+                        foregroundColor: Colors.grey[700],
+                        padding: EdgeInsets.zero,
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+
                     const SurveyProgressIndicator(currentStep: 2),
                     const SizedBox(height: 20),
                     const Text(
-                      'Select any symptoms person is experiencing today',
+                      'Select any symptoms you are experiencing today',
                       style: TextStyle(
                         fontSize: 24,
                         fontWeight: FontWeight.w600,
@@ -152,7 +171,7 @@ class _SurveyScreenFourthState extends State<SurveyScreenFourth> {
 
                               Expanded(
                                 child: Text(
-                                  symptom,
+                                  _formatSymptomName(symptom),
                                   style: const TextStyle(
                                     fontSize: 16,
                                     color: Colors.black87,
@@ -166,6 +185,7 @@ class _SurveyScreenFourthState extends State<SurveyScreenFourth> {
                     ),
 
                     const SizedBox(height: 20),
+
                     Row(
                       children: [
                         const Text(
@@ -200,28 +220,43 @@ class _SurveyScreenFourthState extends State<SurveyScreenFourth> {
                         ),
                       ],
                     ),
+
+                    const SizedBox(height: 20),
+
+                    if (symptoms.values.any((isSelected) => isSelected) ||
+                        _otherSymptomController.text.isNotEmpty)
+                      Container(
+                        padding: const EdgeInsets.all(16),
+                        decoration: BoxDecoration(
+                          color: Colors.grey[50],
+                          borderRadius: BorderRadius.circular(12),
+                          border: Border.all(color: Colors.grey[300]!),
+                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const Text(
+                              'Selected Symptoms:',
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 14,
+                              ),
+                            ),
+                            const SizedBox(height: 8),
+                            Text(
+                              _getSelectedSymptomsText(),
+                              style: const TextStyle(fontSize: 12),
+                            ),
+                          ],
+                        ),
+                      ),
+
                     const SizedBox(height: 32),
+
                     Align(
                       alignment: Alignment.centerRight,
                       child: ElevatedButton(
-                        onPressed: () {
-                          List<String> selectedSymptoms = symptoms.entries
-                              .where((entry) => entry.value)
-                              .map((entry) => entry.key)
-                              .toList();
-
-                          if (_otherSymptomController.text.isNotEmpty) {
-                            selectedSymptoms.add(_otherSymptomController.text);
-                          }
-
-                          print('Selected symptoms: $selectedSymptoms');
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => SurveyScreenFive(),
-                            ),
-                          );
-                        },
+                        onPressed: _validateAndProceed,
                         style: ElevatedButton.styleFrom(
                           backgroundColor: const Color(0xFF2563EB),
                           foregroundColor: Colors.white,
@@ -233,12 +268,19 @@ class _SurveyScreenFourthState extends State<SurveyScreenFourth> {
                             borderRadius: BorderRadius.circular(8),
                           ),
                         ),
-                        child: const Text(
-                          'Next ->',
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w600,
-                          ),
+                        child: const Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Text(
+                              'Next',
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                            SizedBox(width: 8),
+                            Icon(Icons.arrow_forward, size: 20),
+                          ],
                         ),
                       ),
                     ),
@@ -250,5 +292,18 @@ class _SurveyScreenFourthState extends State<SurveyScreenFourth> {
         ],
       ),
     );
+  }
+
+  String _getSelectedSymptomsText() {
+    List<String> selectedSymptoms = symptoms.entries
+        .where((entry) => entry.value)
+        .map((entry) => _formatSymptomName(entry.key))
+        .toList();
+
+    if (_otherSymptomController.text.isNotEmpty) {
+      selectedSymptoms.add(_otherSymptomController.text);
+    }
+
+    return selectedSymptoms.isEmpty ? 'None' : selectedSymptoms.join(', ');
   }
 }

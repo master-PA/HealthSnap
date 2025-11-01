@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:healthsnap_app/screens/main_screens/home.dart';
+import 'package:healthsnap_app/services/authentication_services/auth_services.dart';
+import 'package:healthsnap_app/services/database_services/user_profile_Service.dart';
+import 'package:healthsnap_app/widgets/loading_widget.dart';
 import 'package:healthsnap_app/widgets/survey7_helper.dart';
 import 'package:healthsnap_app/widgets/survey_progress_indicator.dart';
 
@@ -11,7 +14,6 @@ class SurveyScreenSeven extends StatefulWidget {
 }
 
 class _SurveyScreenSevenState extends State<SurveyScreenSeven> {
-  final TextEditingController _symptomC = TextEditingController();
   final TextEditingController _stepsC = TextEditingController();
   final TextEditingController _waterC = TextEditingController();
   final TextEditingController _sleepC = TextEditingController();
@@ -20,10 +22,12 @@ class _SurveyScreenSevenState extends State<SurveyScreenSeven> {
   final TextEditingController _mentalC = TextEditingController();
   final TextEditingController _calorieC = TextEditingController();
 
+  bool _isLoading = false;
+  final AuthService _authService = AuthService();
+
   @override
   void dispose() {
     super.dispose();
-    _symptomC.dispose();
     _stepsC.dispose();
     _waterC.dispose();
     _sleepC.dispose();
@@ -31,6 +35,115 @@ class _SurveyScreenSevenState extends State<SurveyScreenSeven> {
     _bmiC.dispose();
     _mentalC.dispose();
     _calorieC.dispose();
+  }
+
+  int? _parseInt(String text) {
+    if (text.isEmpty) return null;
+    final cleanText = text.replaceAll(RegExp(r'[^0-9]'), '');
+    return int.tryParse(cleanText);
+  }
+
+  double? _parseDouble(String text) {
+    if (text.isEmpty) return null;
+    final cleanText = text.replaceAll(RegExp(r'[^0-9.]'), '');
+    return double.tryParse(cleanText);
+  }
+
+  void _saveHealthMetrics() {
+    UserProfileService().updateHealthMetrics(
+      stepsWalked: _parseInt(_stepsC.text),
+      sleepHours: _parseInt(_sleepC.text),
+      waterIntake: _parseDouble(_waterC.text),
+      heartRate: _parseInt(_heartC.text),
+      bmi: _parseDouble(_bmiC.text),
+      calorieIntake: _parseInt(_calorieC.text),
+    );
+
+    UserProfileService().updateLifestyleInfo(
+      details: _mentalC.text.isNotEmpty
+          ? "Mental wellbeing: ${_mentalC.text}"
+          : null,
+    );
+  }
+
+  Future<void> _submitAllData() async {
+    _saveHealthMetrics();
+
+    setState(() {
+      _isLoading = true;
+    });
+
+    try {
+      final String? authToken = await _authService.getToken();
+
+      if (authToken == null || authToken.isEmpty) {
+        setState(() {
+          _isLoading = false;
+        });
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text("Please login first to save your profile"),
+            backgroundColor: Colors.red,
+          ),
+        );
+        return;
+      }
+
+      final success = await UserProfileService().saveProfileToServer(authToken);
+
+      setState(() {
+        _isLoading = false;
+      });
+
+      if (success) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text(
+              "Profile saved successfully! View your Health Trends in trends section",
+            ),
+            backgroundColor: Colors.green,
+            duration: Duration(seconds: 3),
+          ),
+        );
+
+        Navigator.pushAndRemoveUntil(
+          context,
+          MaterialPageRoute(builder: (context) => const HomeScreen()),
+          (Route<dynamic> route) => false,
+        );
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text("Failed to save to server, but data saved locally."),
+            backgroundColor: Colors.orange,
+          ),
+        );
+
+        Navigator.pushAndRemoveUntil(
+          context,
+          MaterialPageRoute(builder: (context) => const HomeScreen()),
+          (Route<dynamic> route) => false,
+        );
+      }
+    } catch (e) {
+      setState(() {
+        _isLoading = false;
+      });
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text("Error: ${e.toString()}"),
+          backgroundColor: Colors.red,
+        ),
+      );
+
+      Navigator.pushAndRemoveUntil(
+        context,
+        MaterialPageRoute(builder: (context) => const HomeScreen()),
+        (Route<dynamic> route) => false,
+      );
+    }
   }
 
   @override
@@ -42,45 +155,25 @@ class _SurveyScreenSevenState extends State<SurveyScreenSeven> {
           Container(
             decoration: BoxDecoration(
               gradient: LinearGradient(
-                colors: [Colors.orange[100]!, Colors.orange],
+                colors: [Color(0xFFB3E5FC), Color(0xFF4FC3F7)],
               ),
             ),
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
             child: SafeArea(
               bottom: false,
               child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Image.asset('assets/logo.png', height: 80),
-                  Row(
-                    children: [
-                      TextButton(
-                        onPressed: () => Navigator.pop(context),
-                        child: const Text(
-                          'Back',
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 16,
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
-                      ),
-                      const SizedBox(width: 8),
-                      IconButton(
-                        onPressed: () {},
-                        icon: const Icon(
-                          Icons.menu,
-                          color: Colors.white,
-                          size: 28,
-                        ),
-                      ),
-                    ],
+                  Image.asset('assets/logo.png', height: 40),
+
+                  const Spacer(),
+                  IconButton(
+                    onPressed: () {},
+                    icon: const Icon(Icons.menu, color: Colors.white, size: 28),
                   ),
                 ],
               ),
             ),
           ),
-
           Expanded(
             child: SingleChildScrollView(
               child: Padding(
@@ -91,16 +184,20 @@ class _SurveyScreenSevenState extends State<SurveyScreenSeven> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const SizedBox(height: 20),
+                    TextButton.icon(
+                      onPressed: () => Navigator.pop(context),
+                      icon: const Icon(Icons.arrow_back_ios, size: 16),
+                      label: const Text('Back'),
+                      style: TextButton.styleFrom(
+                        foregroundColor: Colors.grey[700],
+                        padding: EdgeInsets.zero,
+                      ),
+                    ),
+                    const SizedBox(height: 16),
                     SurveyProgressIndicator(currentStep: 3),
                     const SizedBox(height: 20),
-                    Text('How is your score?'),
-                    const SizedBox(height: 16),
-                    SurveyTextField(
-                      title: "Symptom Severity",
-                      controller: _symptomC,
-                      hinttext: "e.g., None,mild,moderate,severe",
-                      keyboardtype: TextInputType.text,
+                    Text(
+                      'Fuel Your Progress : Enter Your\nMatrices for Personalized Advice',
                     ),
                     const SizedBox(height: 16),
                     SurveyTextField(
@@ -147,25 +244,40 @@ class _SurveyScreenSevenState extends State<SurveyScreenSeven> {
                     ),
                     const SizedBox(height: 40),
 
-                    ElevatedButton(
-                      onPressed: () {
-                        Navigator.pushAndRemoveUntil(
-                          context,
-                          MaterialPageRoute(builder: (context) => HomeScreen()),
-                          (Route<dynamic> route) => false,
-                        );
-                      },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.blue,
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 40,
-                          vertical: 12,
-                        ),
-                      ),
-                      child: const Text(
-                        'Next',
-                        style: TextStyle(color: Colors.white),
-                      ),
+                    Align(
+                      alignment: AlignmentGeometry.centerRight,
+                      child: _isLoading
+                          ? LoadingWidget()
+                          : ElevatedButton(
+                              onPressed: () {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                    content: Text(
+                                      "View your Health Trends in trends section",
+                                    ),
+                                  ),
+                                );
+                                _submitAllData;
+                                Navigator.pushAndRemoveUntil(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => HomeScreen(),
+                                  ),
+                                  (Route<dynamic> route) => false,
+                                );
+                              },
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: Colors.blue,
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 40,
+                                  vertical: 12,
+                                ),
+                              ),
+                              child: const Text(
+                                'Next',
+                                style: TextStyle(color: Colors.white),
+                              ),
+                            ),
                     ),
                   ],
                 ),
