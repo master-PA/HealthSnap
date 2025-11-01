@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head><title>HealthSnap Predictor</title></head>
+<body style="font-family: sans-serif; text-align: center;">
+  <h2>🩺 Health Pattern Predictor</h2>
+  <form id="form">
+    <textarea id="data" rows="10" cols="50" placeholder="Enter 10 days of symptom data..."></textarea><br><br>
+    <button type="submit">Predict</button>
+  </form>
+  <h3 id="result"></h3>
+
+  <script>
+  document.getElementById("form").onsubmit = async (e) => {
+    e.preventDefault();
+    const data = JSON.parse(document.getElementById("data").value);
+    const res = await fetch("/predict", {
+      method: "POST",
+      headers: {"Content-Type": "application/json"},
+      body: JSON.stringify({data})
+    });
+    const out = await res.json();
+    document.getElementById("result").innerText = "Prediction: " + out.prediction + " (" + out.confidence + ")";
+  };
+  </script>
+</body>
+</html>
