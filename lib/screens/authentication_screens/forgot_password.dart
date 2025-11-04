@@ -105,9 +105,9 @@ class _ForgotPasswordState extends State<ForgotPassword> {
               padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
               child: Column(
                 children: [
-                  const SizedBox(height: 80),
-                  Image.asset('assets/logo.png', height: 150),
-                  const SizedBox(height: 24),
+                  // const SizedBox(height: 80),
+                  // Image.asset('assets/logo.png', height: 150),
+                  const SizedBox(height: 50),
 
                   Card(
                     shape: RoundedRectangleBorder(

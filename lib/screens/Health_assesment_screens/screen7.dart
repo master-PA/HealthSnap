@@ -278,7 +278,7 @@ class _SurveyScreenSevenState extends State<SurveyScreenSeven> {
                       child: _isLoading
                           ? LoadingWidget()
                           : ElevatedButton(
-                              onPressed: () {
+                              onPressed: () async {
                                 ScaffoldMessenger.of(context).showSnackBar(
                                   SnackBar(
                                     content: Text(
@@ -286,7 +286,7 @@ class _SurveyScreenSevenState extends State<SurveyScreenSeven> {
                                     ),
                                   ),
                                 );
-                                _submitAllData;
+                                await _submitAllData();
                                 Navigator.pushAndRemoveUntil(
                                   context,
                                   MaterialPageRoute(

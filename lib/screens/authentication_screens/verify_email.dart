@@ -52,7 +52,6 @@ class _VerifyEmailScreenState extends State<VerifyEmailScreen> {
       backgroundColor: Colors.white,
       body: Column(
         children: [
-          // Gradient Header
           Container(
             decoration: BoxDecoration(
               gradient: LinearGradient(
@@ -90,7 +89,6 @@ class _VerifyEmailScreenState extends State<VerifyEmailScreen> {
             ),
           ),
 
-          // Body
           Expanded(
             child: SingleChildScrollView(
               padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),

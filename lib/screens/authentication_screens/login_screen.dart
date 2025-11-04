@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:healthsnap_app/screens/authentication_screens/create_account.dart';
 import 'package:healthsnap_app/screens/authentication_screens/forgot_password.dart';
-import 'package:healthsnap_app/screens/authentication_screens/verify_email.dart';
 import 'package:healthsnap_app/screens/in_app_screens/about_screen.dart';
 import 'package:healthsnap_app/screens/main_screens/home.dart';
 import 'package:healthsnap_app/services/authentication_services/auth_services.dart';
@@ -44,41 +43,41 @@ class _LoginScreenState extends State<LoginScreen> {
 
     if (!mounted) return;
 
-    if (result['success'] == true) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Login successful!'),
-          backgroundColor: Colors.green,
-        ),
-      );
+    // if (result['success'] == true) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text('Login successful!'),
+        backgroundColor: Colors.green,
+      ),
+    );
 
-      Navigator.of(context).pushReplacement(
-        MaterialPageRoute(builder: (context) => const HomeScreen()),
-      );
-    }
+    Navigator.of(context).pushReplacement(
+      MaterialPageRoute(builder: (context) => const HomeScreen()),
+    );
+    // }
     // If email not verified, redirect to VerifyEmailScreen
-    else if (result['message']?.toLowerCase().contains('verify') == true ||
-        result['email_verified'] == false) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Please verify your email first.'),
-          backgroundColor: Colors.orange,
-        ),
-      );
+    // else if (result['message']?.toLowerCase().contains('verify') == true ||
+    //     result['email_verified'] == false) {
+    //   ScaffoldMessenger.of(context).showSnackBar(
+    //     const SnackBar(
+    //       content: Text('Please verify your email first.'),
+    //       backgroundColor: Colors.orange,
+    //     ),
+    //   );
 
-      // Redirect to VerifyEmailScreen
-      Navigator.push(
-        context,
-        MaterialPageRoute(builder: (_) => const VerifyEmailScreen()),
-      );
-    } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(result['message'] ?? 'Login failed'),
-          backgroundColor: Colors.red,
-        ),
-      );
-    }
+    //   // Redirect to VerifyEmailScreen
+    //   Navigator.push(
+    //     context,
+    //     MaterialPageRoute(builder: (_) => const VerifyEmailScreen()),
+    //   );
+    // } else {
+    //   ScaffoldMessenger.of(context).showSnackBar(
+    //     SnackBar(
+    //       content: Text(result['message'] ?? 'Login failed'),
+    //       backgroundColor: Colors.red,
+    //     ),
+    //   );
+    // }
   }
 
   @override
@@ -129,9 +128,9 @@ class _LoginScreenState extends State<LoginScreen> {
               padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
               child: Column(
                 children: [
-                  const SizedBox(height: 20),
+                  //   const SizedBox(height: 20),
 
-                  Image.asset('assets/logo.png', height: 150),
+                  //   Image.asset('assets/logo.png', height: 150),
                   const SizedBox(height: 30),
 
                   Card(

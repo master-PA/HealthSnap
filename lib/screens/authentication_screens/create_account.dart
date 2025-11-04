@@ -129,9 +129,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
               padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
               child: Column(
                 children: [
-                  const SizedBox(height: 20),
+                  // const SizedBox(height: 20),
 
-                  Image.asset('assets/logo.png', height: 150),
+                  // Image.asset('assets/logo.png', height: 150),
                   const SizedBox(height: 30),
 
                   Card(
