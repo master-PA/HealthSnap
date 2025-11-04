@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:healthsnap_app/screens/authentication_screens/create_account.dart';
 import 'package:healthsnap_app/screens/authentication_screens/forgot_password.dart';
+import 'package:healthsnap_app/screens/in_app_screens/about_screen.dart';
 import 'package:healthsnap_app/screens/main_screens/home.dart';
 import 'package:healthsnap_app/services/authentication_services/auth_services.dart';
 import 'package:healthsnap_app/widgets/loading_widget.dart';
@@ -71,7 +73,7 @@ class _LoginScreenState extends State<LoginScreen> {
           Container(
             decoration: BoxDecoration(
               gradient: LinearGradient(
-                colors: [Colors.orange[100]!, Colors.orange],
+                colors: [Color(0xFFB3E5FC), Color(0xFF4FC3F7)],
               ),
             ),
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
@@ -81,9 +83,24 @@ class _LoginScreenState extends State<LoginScreen> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Image.asset('assets/logo.png', height: 80),
-                  IconButton(
-                    onPressed: () {},
+                  PopupMenuButton<String>(
                     icon: const Icon(Icons.menu, color: Colors.white, size: 28),
+                    onSelected: (value) {
+                      if (value == 'about') {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => const AboutScreen(),
+                          ),
+                        );
+                      }
+                    },
+                    itemBuilder: (context) => [
+                      const PopupMenuItem(
+                        value: 'about',
+                        child: Text('About Us'),
+                      ),
+                    ],
                   ),
                 ],
               ),
@@ -256,11 +273,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
                                     onPressed: _isLoading ? null : logIn,
                                     child: _isLoading
-                                        ? const SizedBox(
-                                            height: 20,
-                                            width: 20,
-                                            child: LoadingWidget(),
-                                          )
+                                        ? LoadingWidget()
                                         : const Text(
                                             "Sign in",
                                             style: TextStyle(
@@ -297,6 +310,45 @@ class _LoginScreenState extends State<LoginScreen> {
                                       fontWeight: FontWeight.w500,
                                     ),
                                   ),
+                                ),
+                                const SizedBox(height: 16),
+
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Text(
+                                      "Don't have account? ",
+                                      style: TextStyle(
+                                        fontSize: 14,
+                                        color: Colors.grey[600],
+                                      ),
+                                    ),
+                                    TextButton(
+                                      onPressed: () {
+                                        Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder: (context) =>
+                                                const RegisterScreen(),
+                                          ),
+                                        );
+                                      },
+                                      style: TextButton.styleFrom(
+                                        padding: EdgeInsets.zero,
+                                        minimumSize: const Size(0, 0),
+                                        tapTargetSize:
+                                            MaterialTapTargetSize.shrinkWrap,
+                                      ),
+                                      child: const Text(
+                                        'Create',
+                                        style: TextStyle(
+                                          color: Color(0xFFEA5A47),
+                                          fontSize: 14,
+                                          fontWeight: FontWeight.w500,
+                                        ),
+                                      ),
+                                    ),
+                                  ],
                                 ),
                                 const SizedBox(height: 16),
 

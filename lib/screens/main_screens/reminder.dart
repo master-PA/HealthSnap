@@ -191,8 +191,8 @@ class _ReminderScreenState extends State<ReminderScreen> {
                             },
                             child: AnimatedContainer(
                               duration: const Duration(milliseconds: 300),
-                              height: 40,
-                              width: 40,
+                              height: 30,
+                              width: 30,
                               decoration: BoxDecoration(
                                 shape: BoxShape.circle,
                                 color: selectedDays[index]

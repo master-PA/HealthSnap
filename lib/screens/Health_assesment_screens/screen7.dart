@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:healthsnap_app/screens/Health_assesment_screens/screen2.dart';
+import 'package:healthsnap_app/screens/in_app_screens/about_screen.dart';
 import 'package:healthsnap_app/screens/main_screens/home.dart';
+import 'package:healthsnap_app/screens/main_screens/trend.dart';
 import 'package:healthsnap_app/services/authentication_services/auth_services.dart';
 import 'package:healthsnap_app/services/database_services/user_profile_Service.dart';
 import 'package:healthsnap_app/widgets/loading_widget.dart';
@@ -109,7 +112,7 @@ class _SurveyScreenSevenState extends State<SurveyScreenSeven> {
 
         Navigator.pushAndRemoveUntil(
           context,
-          MaterialPageRoute(builder: (context) => const HomeScreen()),
+          MaterialPageRoute(builder: (context) => const HealthTrendScreen()),
           (Route<dynamic> route) => false,
         );
       } else {
@@ -166,9 +169,35 @@ class _SurveyScreenSevenState extends State<SurveyScreenSeven> {
                   Image.asset('assets/logo.png', height: 40),
 
                   const Spacer(),
-                  IconButton(
-                    onPressed: () {},
+                  PopupMenuButton<String>(
                     icon: const Icon(Icons.menu, color: Colors.white, size: 28),
+                    onSelected: (value) {
+                      if (value == 'about') {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => const AboutScreen(),
+                          ),
+                        );
+                      } else if (value == 'reevaluate') {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => const SurveyScreenSecond(),
+                          ),
+                        );
+                      }
+                    },
+                    itemBuilder: (context) => [
+                      const PopupMenuItem(
+                        value: 'about',
+                        child: Text('About Us'),
+                      ),
+                      const PopupMenuItem(
+                        value: 'reevaluate',
+                        child: Text('Re-evaluate'),
+                      ),
+                    ],
                   ),
                 ],
               ),

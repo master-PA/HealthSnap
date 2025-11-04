@@ -1,5 +1,7 @@
 import "package:flutter/material.dart";
-import "package:healthsnap_app/screens/Health_assesment_screens/screen7.dart";
+import "package:healthsnap_app/screens/Health_assesment_screens/screen2.dart";
+import "package:healthsnap_app/screens/Health_assesment_screens/screen4.dart";
+import "package:healthsnap_app/screens/in_app_screens/about_screen.dart";
 import "package:healthsnap_app/services/database_services/user_profile_Service.dart";
 import "package:healthsnap_app/widgets/survey3_helper.dart";
 import "package:healthsnap_app/widgets/survey_progress_indicator.dart";
@@ -41,7 +43,7 @@ class _SurveyScreenThirdState extends State<SurveyScreenThird> {
 
       Navigator.push(
         context,
-        MaterialPageRoute(builder: (context) => SurveyScreenSeven()),
+        MaterialPageRoute(builder: (context) => SurveyScreenFourth()),
       );
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -73,9 +75,35 @@ class _SurveyScreenThirdState extends State<SurveyScreenThird> {
                   Image.asset('assets/logo.png', height: 40),
 
                   const Spacer(),
-                  IconButton(
-                    onPressed: () {},
+                  PopupMenuButton<String>(
                     icon: const Icon(Icons.menu, color: Colors.white, size: 28),
+                    onSelected: (value) {
+                      if (value == 'about') {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => const AboutScreen(),
+                          ),
+                        );
+                      } else if (value == 'reevaluate') {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => const SurveyScreenSecond(),
+                          ),
+                        );
+                      }
+                    },
+                    itemBuilder: (context) => [
+                      const PopupMenuItem(
+                        value: 'about',
+                        child: Text('About Us'),
+                      ),
+                      const PopupMenuItem(
+                        value: 'reevaluate',
+                        child: Text('Re-evaluate'),
+                      ),
+                    ],
                   ),
                 ],
               ),
@@ -214,7 +242,7 @@ class _SurveyScreenThirdState extends State<SurveyScreenThird> {
                       alignment: Alignment.centerRight,
                       child: ElevatedButton(
                         onPressed: () {
-                          _validateAndProceed;
+                          _validateAndProceed();
                         },
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Color(0xFF2196F3),

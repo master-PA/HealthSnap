@@ -1,6 +1,10 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:healthsnap_app/models/user_profile_model.dart';
 import 'package:healthsnap_app/screens/Health_assesment_screens/screen2.dart';
+import 'package:healthsnap_app/screens/in_app_screens/about_screen.dart';
+import 'package:healthsnap_app/screens/main_screens/profile.dart';
 import 'package:healthsnap_app/screens/main_screens/reminder.dart';
 import 'package:healthsnap_app/screens/main_screens/trend.dart';
 import 'package:healthsnap_app/services/database_services/user_profile_Service.dart';
@@ -13,13 +17,14 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  int _selectedIndex = 3;
+  int _selectedIndex = 2;
 
   final List<Widget> _screens = [
     const SurveyScreenSecond(),
-    HealthTrendScreen(),
-    const ReminderScreen(),
+    const HealthTrendScreen(),
     const HomeMainView(),
+    const ReminderScreen(),
+    const ProfileScreen(),
   ];
 
   void _onItemTapped(int index) {
@@ -28,45 +33,85 @@ class _HomeScreenState extends State<HomeScreen> {
     });
   }
 
+  Future<bool> _onWillPop() async {
+    if (_selectedIndex != 2) {
+      setState(() {
+        _selectedIndex = 2;
+      });
+      return false;
+    }
+
+    final shouldExit = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Exit App'),
+        content: const Text('Do you really want to exit the app?'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(false),
+            child: const Text('No'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(true),
+            child: const Text('Yes'),
+          ),
+        ],
+      ),
+    );
+
+    if (shouldExit == true) {
+      exit(0);
+    }
+
+    return false;
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.white,
-      body: IndexedStack(index: _selectedIndex, children: _screens),
-      bottomNavigationBar: Container(
-        decoration: BoxDecoration(
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.1),
-              blurRadius: 10,
-              offset: const Offset(0, -2),
-            ),
-          ],
-        ),
-        child: BottomNavigationBar(
-          type: BottomNavigationBarType.fixed,
-          backgroundColor: Colors.white,
-          selectedItemColor: const Color(0xFF041E7D),
-          unselectedItemColor: Colors.grey[600],
-          selectedFontSize: 12,
-          unselectedFontSize: 12,
-          currentIndex: _selectedIndex,
-          onTap: _onItemTapped,
-          items: const [
-            BottomNavigationBarItem(
-              icon: Icon(Icons.track_changes),
-              label: 'Tracking',
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.trending_up),
-              label: 'Trends',
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.access_time),
-              label: 'Reminders',
-            ),
-            BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
-          ],
+    return WillPopScope(
+      onWillPop: _onWillPop,
+      child: Scaffold(
+        backgroundColor: Colors.white,
+        body: IndexedStack(index: _selectedIndex, children: _screens),
+        bottomNavigationBar: Container(
+          decoration: BoxDecoration(
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.1),
+                blurRadius: 10,
+                offset: const Offset(0, -2),
+              ),
+            ],
+          ),
+          child: BottomNavigationBar(
+            type: BottomNavigationBarType.fixed,
+            backgroundColor: Colors.white,
+            selectedItemColor: const Color(0xFF041E7D),
+            unselectedItemColor: Colors.grey[600],
+            selectedFontSize: 12,
+            unselectedFontSize: 12,
+            currentIndex: _selectedIndex,
+            onTap: _onItemTapped,
+            items: const [
+              BottomNavigationBarItem(
+                icon: Icon(Icons.track_changes),
+                label: 'Tracking',
+              ),
+              BottomNavigationBarItem(
+                icon: Icon(Icons.trending_up),
+                label: 'Trends',
+              ),
+              BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
+              BottomNavigationBarItem(
+                icon: Icon(Icons.access_time),
+                label: 'Reminders',
+              ),
+              BottomNavigationBarItem(
+                icon: Icon(Icons.person_pin),
+                label: 'You',
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -87,7 +132,6 @@ class HomeMainView extends StatelessWidget {
 
         return Column(
           children: [
-            // Header
             Container(
               decoration: const BoxDecoration(
                 gradient: LinearGradient(
@@ -101,20 +145,34 @@ class HomeMainView extends StatelessWidget {
                   children: [
                     Image.asset('assets/logo.png', height: 40),
                     const Spacer(),
-                    IconButton(
-                      onPressed: () {},
+                    PopupMenuButton<String>(
                       icon: const Icon(
                         Icons.menu,
                         color: Colors.white,
                         size: 28,
                       ),
+                      onSelected: (value) {
+                        if (value == 'about') {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) => const AboutScreen(),
+                            ),
+                          );
+                        }
+                      },
+                      itemBuilder: (context) => [
+                        const PopupMenuItem(
+                          value: 'about',
+                          child: Text('About Us'),
+                        ),
+                      ],
                     ),
                   ],
                 ),
               ),
             ),
 
-            // Body
             Expanded(
               child: SingleChildScrollView(
                 padding: const EdgeInsets.all(20),
@@ -163,14 +221,14 @@ class HomeMainView extends StatelessWidget {
                             children: [
                               Icon(
                                 Icons.lightbulb_outline,
-                                color: Color(0xFF041E7D),
+                                color: Colors.amber,
                                 size: 18,
                               ),
                               SizedBox(width: 8),
                               Text(
                                 'Tip',
                                 style: TextStyle(
-                                  color: Color(0xFF041E7D),
+                                  color: Colors.black,
                                   fontSize: 14,
                                   fontWeight: FontWeight.bold,
                                 ),
@@ -195,7 +253,7 @@ class HomeMainView extends StatelessWidget {
                       subtitle: "Record symptoms, activities, mood",
                       buttonText: "Start Tracking →",
                       onTap: () {
-                        Navigator.pushReplacement(
+                        Navigator.push(
                           context,
                           MaterialPageRoute(
                             builder: (context) => const SurveyScreenSecond(),
@@ -210,7 +268,7 @@ class HomeMainView extends StatelessWidget {
                       subtitle: "Schedule meds, appointments ...",
                       buttonText: "New Reminder →",
                       onTap: () {
-                        Navigator.pushReplacement(
+                        Navigator.push(
                           context,
                           MaterialPageRoute(
                             builder: (context) => const ReminderScreen(),
@@ -225,7 +283,7 @@ class HomeMainView extends StatelessWidget {
                       subtitle: "Hidden patterns, recommendations",
                       buttonText: "View Insights →",
                       onTap: () {
-                        Navigator.pushReplacement(
+                        Navigator.push(
                           context,
                           MaterialPageRoute(
                             builder: (context) => HealthTrendScreen(),

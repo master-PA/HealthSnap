@@ -41,7 +41,7 @@ class _StartTrackingScreenState extends State<StartTrackingScreen> {
           Container(
             decoration: BoxDecoration(
               gradient: LinearGradient(
-                colors: [Colors.orange[100]!, Colors.orange],
+                colors: [Color(0xFFB3E5FC), Color(0xFF4FC3F7)],
               ),
             ),
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),

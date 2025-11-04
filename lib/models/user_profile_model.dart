@@ -21,6 +21,9 @@ class UserProfile {
   final double bmi;
   final int heartRate;
   final int calorieIntake;
+  final String? prediction;
+  final double? confidence;
+  final int? daysProvided;
 
   const UserProfile({
     required this.name,
@@ -45,11 +48,11 @@ class UserProfile {
     required this.bmi,
     required this.heartRate,
     required this.calorieIntake,
+    this.prediction,
+    this.confidence,
+    this.daysProvided,
   });
 
-  // ----------------------------
-  // 🔹 Convert to JSON for API
-  // ----------------------------
   Map<String, dynamic> toJson() {
     return {
       'name': name,
@@ -77,9 +80,40 @@ class UserProfile {
     };
   }
 
-  // ----------------------------
-  // 🔹 Copy existing object with new values
-  // ----------------------------
+  factory UserProfile.fromJson(Map<String, dynamic> json) {
+    return UserProfile(
+      name: json['name'] ?? '',
+      gender: json['gender'] ?? '',
+      dob: json['DOB'] ?? json['dob'] ?? '',
+      relationship: json['relationship'] ?? '',
+      height: json['height'] ?? 0,
+      weight: json['weight'] ?? 0,
+      country: json['country'] ?? '',
+      dietType: json['diet_type'] ?? json['dietType'] ?? '',
+      sleepQuality: json['sleep_quality'] ?? json['sleepQuality'] ?? '',
+      hydrationLevel: json['hydration_level'] ?? json['hydrationLevel'] ?? '',
+      stressLevel: json['stress_level'] ?? json['stressLevel'] ?? '',
+      smoking: json['smoking'] ?? '',
+      alcoholIntake: json['alcohol_intake'] ?? json['alcoholIntake'] ?? '',
+      symptoms: json['symptoms'] != null
+          ? List<String>.from(json['symptoms'])
+          : [],
+      symptomSeverity:
+          json['symptom_severity'] ?? json['symptomSeverity'] ?? '',
+      details: json['details'] ?? '',
+      stepsWalked: json['steps_walked'] ?? json['stepsWalked'] ?? 0,
+      sleepHours: json['sleep_hours'] ?? json['sleepHours'] ?? 0,
+      waterIntake: (json['water_intake'] ?? json['waterIntake'] ?? 0.0)
+          .toDouble(),
+      bmi: (json['BMI'] ?? json['bmi'] ?? 0.0).toDouble(),
+      heartRate: json['heart_rate'] ?? json['heartRate'] ?? 0,
+      calorieIntake: json['calorie_intake'] ?? json['calorieIntake'] ?? 0,
+      prediction: json['mlPrediction']?['prediction'],
+      confidence: json['mlPrediction']?['confidence']?.toDouble(),
+      daysProvided: json['mlPrediction']?['days_provided'],
+    );
+  }
+
   UserProfile copyWith({
     String? name,
     String? gender,
@@ -127,6 +161,9 @@ class UserProfile {
       bmi: bmi ?? this.bmi,
       heartRate: heartRate ?? this.heartRate,
       calorieIntake: calorieIntake ?? this.calorieIntake,
+      prediction: prediction ?? this.prediction,
+      confidence: confidence ?? this.confidence,
+      daysProvided: daysProvided ?? this.daysProvided,
     );
   }
 }

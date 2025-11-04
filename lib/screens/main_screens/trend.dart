@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:healthsnap_app/models/user_profile_model.dart';
 import 'package:healthsnap_app/screens/Health_assesment_screens/screen4.dart';
+import 'package:healthsnap_app/screens/in_app_screens/about_screen.dart';
 import 'package:healthsnap_app/services/database_services/user_profile_Service.dart';
 
 class HealthTrendScreen extends StatelessWidget {
@@ -18,7 +19,6 @@ class HealthTrendScreen extends StatelessWidget {
 
     return Scaffold(
       backgroundColor: Colors.white,
-
       body: Column(
         children: [
           Container(
@@ -35,9 +35,24 @@ class HealthTrendScreen extends StatelessWidget {
                   Image.asset('assets/logo.png', height: 40),
 
                   const Spacer(),
-                  IconButton(
-                    onPressed: () {},
+                  PopupMenuButton<String>(
                     icon: const Icon(Icons.menu, color: Colors.white, size: 28),
+                    onSelected: (value) {
+                      if (value == 'about') {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => const AboutScreen(),
+                          ),
+                        );
+                      }
+                    },
+                    itemBuilder: (context) => [
+                      const PopupMenuItem(
+                        value: 'about',
+                        child: Text('About Us'),
+                      ),
+                    ],
                   ),
                 ],
               ),
@@ -115,7 +130,7 @@ class HealthTrendScreen extends StatelessWidget {
                   _buildHealthScoreCard(overallScore),
                   const SizedBox(height: 20),
 
-                  _buildAdviceCard(advice),
+                  _buildAdviceCard(advice, userProfile),
                   const SizedBox(height: 30),
                 ],
               ),
@@ -366,7 +381,7 @@ class HealthTrendScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildAdviceCard(String advice) {
+  Widget _buildAdviceCard(String advice, UserProfile profile) {
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(20),
@@ -395,6 +410,90 @@ class HealthTrendScreen extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 12),
+
+          // ML Prediction Section
+          if (profile.prediction != null) ...[
+            Container(
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: _getPredictionColor(
+                  profile.prediction!,
+                ).withOpacity(0.1),
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(
+                  color: _getPredictionColor(profile.prediction!),
+                  width: 2,
+                ),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      Icon(
+                        _getPredictionIcon(profile.prediction!),
+                        color: _getPredictionColor(profile.prediction!),
+                        size: 24,
+                      ),
+                      const SizedBox(width: 8),
+                      Text(
+                        "Health Status: ${_formatPrediction(profile.prediction!)}",
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 16,
+                          color: _getPredictionColor(profile.prediction!),
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 8),
+                  if (profile.confidence != null)
+                    Row(
+                      children: [
+                        const Text(
+                          "Confidence: ",
+                          style: TextStyle(fontSize: 13, color: Colors.black54),
+                        ),
+                        Text(
+                          "${(profile.confidence! * 100).toStringAsFixed(1)}%",
+                          style: const TextStyle(
+                            fontSize: 13,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.blue,
+                          ),
+                        ),
+                      ],
+                    ),
+                  if (profile.daysProvided != null)
+                    Text(
+                      "Based on ${profile.daysProvided} days of data",
+                      style: const TextStyle(
+                        fontSize: 12,
+                        color: Colors.black45,
+                        fontStyle: FontStyle.italic,
+                      ),
+                    ),
+                  const SizedBox(height: 8),
+                  Text(
+                    _getPredictionMessage(profile.prediction!),
+                    style: const TextStyle(fontSize: 13, color: Colors.black87),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 16),
+          ],
+
+          // General Health Advice
+          const Text(
+            "General Recommendations:",
+            style: TextStyle(
+              fontWeight: FontWeight.bold,
+              fontSize: 15,
+              color: Colors.black87,
+            ),
+          ),
+          const SizedBox(height: 8),
           Text(
             advice.isEmpty
                 ? "No specific advice at the moment. Complete your health assessment for personalized recommendations."
@@ -404,6 +503,49 @@ class HealthTrendScreen extends StatelessWidget {
         ],
       ),
     );
+  }
+
+  Color _getPredictionColor(String prediction) {
+    switch (prediction.toLowerCase()) {
+      case 'improving':
+        return Colors.green;
+      case 'worsening':
+        return Colors.red;
+      case 'stable':
+        return Colors.orange;
+      default:
+        return Colors.blue;
+    }
+  }
+
+  IconData _getPredictionIcon(String prediction) {
+    switch (prediction.toLowerCase()) {
+      case 'improving':
+        return Icons.trending_up;
+      case 'worsening':
+        return Icons.trending_down;
+      case 'stable':
+        return Icons.trending_flat;
+      default:
+        return Icons.analytics;
+    }
+  }
+
+  String _formatPrediction(String prediction) {
+    return prediction[0].toUpperCase() + prediction.substring(1);
+  }
+
+  String _getPredictionMessage(String prediction) {
+    switch (prediction.toLowerCase()) {
+      case 'improving':
+        return "Great news! Your symptoms are showing signs of improvement. Continue following your current health routine.";
+      case 'worsening':
+        return "Your symptoms may be worsening. Please consult a healthcare provider if symptoms persist or worsen.";
+      case 'stable':
+        return "Your symptoms remain stable. Continue monitoring and maintain your current care routine.";
+      default:
+        return "Health status being monitored.";
+    }
   }
 
   String _formatSymptomName(String symptom) {
@@ -532,7 +674,6 @@ class HealthTrendScreen extends StatelessWidget {
     return advice.join(" ");
   }
 
-  // Trend calculation methods (simplified - in real app, you'd compare with historical data)
   String _getStepsTrend(int steps) {
     if (steps >= 8000) return "+15% from target";
     if (steps >= 6000) return "+5% from target";
