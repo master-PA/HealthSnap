@@ -24,6 +24,8 @@ class UserProfile {
   final String? prediction;
   final double? confidence;
   final int? daysProvided;
+  final String? prediction2;
+  final double? confidence2;
 
   const UserProfile({
     required this.name,
@@ -51,6 +53,8 @@ class UserProfile {
     this.prediction,
     this.confidence,
     this.daysProvided,
+    this.prediction2,
+    this.confidence2,
   });
 
   Map<String, dynamic> toJson() {
@@ -108,9 +112,12 @@ class UserProfile {
       bmi: (json['BMI'] ?? json['bmi'] ?? 0.0).toDouble(),
       heartRate: json['heart_rate'] ?? json['heartRate'] ?? 0,
       calorieIntake: json['calorie_intake'] ?? json['calorieIntake'] ?? 0,
-      prediction: json['mlPrediction']?['prediction'],
-      confidence: json['mlPrediction']?['confidence']?.toDouble(),
+      prediction: json['prediction'] ?? json['mlPrediction']?['prediction'],
+      confidence: (json['confidence'] ?? json['mlPrediction']?['confidence'])
+          ?.toDouble(),
       daysProvided: json['mlPrediction']?['days_provided'],
+      prediction2: json['prediction_2'],
+      confidence2: (json['confidence_2'])?.toDouble(),
     );
   }
 
@@ -164,6 +171,8 @@ class UserProfile {
       prediction: prediction ?? this.prediction,
       confidence: confidence ?? this.confidence,
       daysProvided: daysProvided ?? this.daysProvided,
+      prediction2: prediction2 ?? this.prediction2,
+      confidence2: confidence2 ?? this.confidence2,
     );
   }
 }

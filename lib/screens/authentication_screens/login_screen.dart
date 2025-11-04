@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:healthsnap_app/screens/authentication_screens/create_account.dart';
 import 'package:healthsnap_app/screens/authentication_screens/forgot_password.dart';
+import 'package:healthsnap_app/screens/authentication_screens/verify_email.dart';
 import 'package:healthsnap_app/screens/in_app_screens/about_screen.dart';
 import 'package:healthsnap_app/screens/main_screens/home.dart';
 import 'package:healthsnap_app/services/authentication_services/auth_services.dart';
@@ -43,7 +44,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
     if (!mounted) return;
 
-    if (result['success']) {
+    if (result['success'] == true) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('Login successful!'),
@@ -53,6 +54,22 @@ class _LoginScreenState extends State<LoginScreen> {
 
       Navigator.of(context).pushReplacement(
         MaterialPageRoute(builder: (context) => const HomeScreen()),
+      );
+    }
+    // If email not verified, redirect to VerifyEmailScreen
+    else if (result['message']?.toLowerCase().contains('verify') == true ||
+        result['email_verified'] == false) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Please verify your email first.'),
+          backgroundColor: Colors.orange,
+        ),
+      );
+
+      // Redirect to VerifyEmailScreen
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (_) => const VerifyEmailScreen()),
       );
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -255,6 +272,35 @@ class _LoginScreenState extends State<LoginScreen> {
                                     );
                                   },
                                 ),
+                                // const SizedBox(height: 10),
+                                // Align(
+                                //   alignment: AlignmentDirectional.centerEnd,
+                                //   child: TextButton(
+                                //     onPressed: () {
+                                //       Navigator.push(
+                                //         context,
+                                //         MaterialPageRoute(
+                                //           builder: (context) =>
+                                //               const VerifyEmailScreen(),
+                                //         ),
+                                //       );
+                                //     },
+                                //     style: TextButton.styleFrom(
+                                //       padding: EdgeInsets.zero,
+                                //       minimumSize: const Size(0, 0),
+                                //       tapTargetSize:
+                                //           MaterialTapTargetSize.shrinkWrap,
+                                //     ),
+                                //     child: const Text(
+                                //       'Verify',
+                                //       style: TextStyle(
+                                //         color: Color(0xFFEA5A47),
+                                //         fontSize: 13,
+                                //         fontWeight: FontWeight.w500,
+                                //       ),
+                                //     ),
+                                //   ),
+                                // ),
                                 const SizedBox(height: 24),
 
                                 SizedBox(

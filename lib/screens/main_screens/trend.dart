@@ -33,7 +33,6 @@ class HealthTrendScreen extends StatelessWidget {
               child: Row(
                 children: [
                   Image.asset('assets/logo.png', height: 40),
-
                   const Spacer(),
                   PopupMenuButton<String>(
                     icon: const Icon(Icons.menu, color: Colors.white, size: 28),
@@ -58,7 +57,6 @@ class HealthTrendScreen extends StatelessWidget {
               ),
             ),
           ),
-
           Expanded(
             child: SingleChildScrollView(
               padding: const EdgeInsets.all(16),
@@ -75,7 +73,6 @@ class HealthTrendScreen extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(height: 20),
-
                   GridView.count(
                     shrinkWrap: true,
                     crossAxisCount: 2,
@@ -119,17 +116,14 @@ class HealthTrendScreen extends StatelessWidget {
                     ],
                   ),
                   const SizedBox(height: 20),
-
                   _buildSymptomsCard(
                     context,
                     symptoms,
                     userProfile.symptomSeverity,
                   ),
                   const SizedBox(height: 20),
-
                   _buildHealthScoreCard(overallScore),
                   const SizedBox(height: 20),
-
                   _buildAdviceCard(advice, userProfile),
                   const SizedBox(height: 30),
                 ],
@@ -382,6 +376,9 @@ class HealthTrendScreen extends StatelessWidget {
   }
 
   Widget _buildAdviceCard(String advice, UserProfile profile) {
+    final bool hasMLPredictions =
+        profile.prediction != null || profile.prediction2 != null;
+
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(20),
@@ -401,7 +398,7 @@ class HealthTrendScreen extends StatelessWidget {
         children: [
           const Center(
             child: Text(
-              "Advices",
+              "Health Insights & Recommendations",
               style: TextStyle(
                 color: Colors.blue,
                 fontWeight: FontWeight.bold,
@@ -409,9 +406,9 @@ class HealthTrendScreen extends StatelessWidget {
               ),
             ),
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: 16),
 
-          // ML Prediction Section
+          // ML Model 1: Health Status/Trend Prediction
           if (profile.prediction != null) ...[
             Container(
               padding: const EdgeInsets.all(16),
@@ -436,12 +433,14 @@ class HealthTrendScreen extends StatelessWidget {
                         size: 24,
                       ),
                       const SizedBox(width: 8),
-                      Text(
-                        "Health Status: ${_formatPrediction(profile.prediction!)}",
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 16,
-                          color: _getPredictionColor(profile.prediction!),
+                      Expanded(
+                        child: Text(
+                          "Health Trend: ${_formatPrediction(profile.prediction!)}",
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 16,
+                            color: _getPredictionColor(profile.prediction!),
+                          ),
                         ),
                       ),
                     ],
@@ -462,16 +461,20 @@ class HealthTrendScreen extends StatelessWidget {
                             color: Colors.blue,
                           ),
                         ),
+                        if (profile.daysProvided != null) ...[
+                          const Text(
+                            " • ",
+                            style: TextStyle(color: Colors.black45),
+                          ),
+                          Text(
+                            "${profile.daysProvided} days of data",
+                            style: const TextStyle(
+                              fontSize: 12,
+                              color: Colors.black45,
+                            ),
+                          ),
+                        ],
                       ],
-                    ),
-                  if (profile.daysProvided != null)
-                    Text(
-                      "Based on ${profile.daysProvided} days of data",
-                      style: const TextStyle(
-                        fontSize: 12,
-                        color: Colors.black45,
-                        fontStyle: FontStyle.italic,
-                      ),
                     ),
                   const SizedBox(height: 8),
                   Text(
@@ -484,27 +487,173 @@ class HealthTrendScreen extends StatelessWidget {
             const SizedBox(height: 16),
           ],
 
-          // General Health Advice
-          const Text(
-            "General Recommendations:",
-            style: TextStyle(
-              fontWeight: FontWeight.bold,
-              fontSize: 15,
-              color: Colors.black87,
+          // ML Model 2: Health Tip/Focus Area
+          if (profile.prediction2 != null) ...[
+            Container(
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [Colors.blue.shade50, Colors.cyan.shade50],
+                ),
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(color: Colors.blue.shade300, width: 1.5),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.all(8),
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: Icon(
+                          _getTipIcon(profile.prediction2!),
+                          color: Colors.blue,
+                          size: 24,
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const Text(
+                              "Focus Area",
+                              style: TextStyle(
+                                fontSize: 12,
+                                color: Colors.black54,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                            Text(
+                              _formatTipName(profile.prediction2!),
+                              style: const TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 16,
+                                color: Colors.blue,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      if (profile.confidence2 != null)
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 8,
+                            vertical: 4,
+                          ),
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: Text(
+                            "${(profile.confidence2! * 100).toStringAsFixed(0)}%",
+                            style: const TextStyle(
+                              fontSize: 12,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.blue,
+                            ),
+                          ),
+                        ),
+                    ],
+                  ),
+                  const SizedBox(height: 12),
+                  Text(
+                    _getTipMessage(profile.prediction2!),
+                    style: const TextStyle(
+                      fontSize: 13,
+                      color: Colors.black87,
+                      height: 1.4,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 16),
+          ],
+
+          // General Recommendations Section
+          Container(
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: Colors.grey.shade50,
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    Icon(
+                      Icons.lightbulb_outline,
+                      color: Colors.amber.shade700,
+                      size: 20,
+                    ),
+                    const SizedBox(width: 8),
+                    const Text(
+                      "General Recommendations",
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 15,
+                        color: Colors.black87,
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 12),
+                Text(
+                  advice.isEmpty
+                      ? "Your health metrics look great! Maintain your current healthy habits and regular check-ups."
+                      : advice,
+                  style: const TextStyle(
+                    color: Colors.black87,
+                    fontSize: 14,
+                    height: 1.5,
+                  ),
+                ),
+              ],
             ),
           ),
-          const SizedBox(height: 8),
-          Text(
-            advice.isEmpty
-                ? "No specific advice at the moment. Complete your health assessment for personalized recommendations."
-                : advice,
-            style: const TextStyle(color: Colors.black87, fontSize: 14),
-          ),
+
+          // Show message if no ML predictions
+          if (!hasMLPredictions) ...[
+            const SizedBox(height: 12),
+            Container(
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: Colors.blue.shade50,
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: Row(
+                children: [
+                  Icon(
+                    Icons.info_outline,
+                    size: 18,
+                    color: Colors.blue.shade700,
+                  ),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: Text(
+                      "Keep tracking your health data for AI-powered insights",
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: Colors.blue.shade700,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
         ],
       ),
     );
   }
 
+  // Model 1 helpers (Health Trend)
   Color _getPredictionColor(String prediction) {
     switch (prediction.toLowerCase()) {
       case 'improving':
@@ -548,6 +697,56 @@ class HealthTrendScreen extends StatelessWidget {
     }
   }
 
+  // Model 2 helpers (Health Tips)
+  IconData _getTipIcon(String tip) {
+    switch (tip.toLowerCase()) {
+      case 'hydration':
+        return Icons.water_drop;
+      case 'sleep':
+        return Icons.bedtime;
+      case 'exercise':
+      case 'activity':
+        return Icons.directions_run;
+      case 'nutrition':
+      case 'diet':
+        return Icons.restaurant;
+      case 'stress':
+        return Icons.self_improvement;
+      case 'meditation':
+        return Icons.spa;
+      default:
+        return Icons.health_and_safety;
+    }
+  }
+
+  String _formatTipName(String tip) {
+    return tip
+        .split('_')
+        .map((word) => word[0].toUpperCase() + word.substring(1))
+        .join(' ');
+  }
+
+  String _getTipMessage(String tip) {
+    switch (tip.toLowerCase()) {
+      case 'hydration':
+        return "Focus on increasing your water intake. Aim for at least 2-3 liters per day to support optimal body function, flush toxins, and maintain energy levels.";
+      case 'sleep':
+        return "Prioritize getting 7-9 hours of quality sleep. Establish a consistent bedtime routine and create a comfortable sleep environment for better rest.";
+      case 'exercise':
+      case 'activity':
+        return "Increase your physical activity level. Try to incorporate at least 30 minutes of moderate exercise daily, such as brisk walking, cycling, or swimming.";
+      case 'nutrition':
+      case 'diet':
+        return "Pay attention to your nutritional intake. Focus on a balanced diet rich in fruits, vegetables, lean proteins, and whole grains.";
+      case 'stress':
+        return "Work on stress management techniques. Consider mindfulness, deep breathing exercises, or activities you enjoy to reduce stress levels.";
+      case 'meditation':
+        return "Incorporate meditation or relaxation practices into your daily routine. Even 5-10 minutes can help improve mental clarity and reduce anxiety.";
+      default:
+        return "This is an important area to focus on for improving your overall health and wellbeing.";
+    }
+  }
+
   String _formatSymptomName(String symptom) {
     return symptom
         .split('_')
@@ -569,9 +768,8 @@ class HealthTrendScreen extends StatelessWidget {
   }
 
   int _calculateHealthScore(UserProfile profile) {
-    int score = 75; // Base score
+    int score = 75;
 
-    // Adjust based on steps (target: 7500 steps)
     if (profile.stepsWalked >= 7500)
       score += 10;
     else if (profile.stepsWalked >= 5000)
@@ -579,7 +777,6 @@ class HealthTrendScreen extends StatelessWidget {
     else if (profile.stepsWalked < 3000)
       score -= 10;
 
-    // Adjust based on sleep (target: 7-9 hours)
     if (profile.sleepHours >= 7 && profile.sleepHours <= 9)
       score += 10;
     else if (profile.sleepHours >= 6)
@@ -587,7 +784,6 @@ class HealthTrendScreen extends StatelessWidget {
     else if (profile.sleepHours < 5)
       score -= 10;
 
-    // Adjust based on water intake (target: 2L)
     if (profile.waterIntake >= 2.0)
       score += 10;
     else if (profile.waterIntake >= 1.5)
@@ -595,7 +791,6 @@ class HealthTrendScreen extends StatelessWidget {
     else if (profile.waterIntake < 1.0)
       score -= 10;
 
-    // Adjust based on BMI (healthy range: 18.5-24.9)
     if (profile.bmi > 0) {
       if (profile.bmi >= 18.5 && profile.bmi <= 24.9)
         score += 10;
@@ -605,7 +800,6 @@ class HealthTrendScreen extends StatelessWidget {
         score -= 10;
     }
 
-    // Adjust based on symptoms
     if (profile.symptoms.isNotEmpty) {
       if (profile.symptomSeverity.toLowerCase() == 'severe')
         score -= 15;

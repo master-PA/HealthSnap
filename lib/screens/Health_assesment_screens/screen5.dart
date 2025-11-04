@@ -284,7 +284,7 @@ class _SurveyScreenFiveState extends State<SurveyScreenFive> {
             alignment: Alignment.centerRight,
             child: ElevatedButton(
               onPressed: () {
-                _validateAndProceed;
+                _validateAndProceed();
               },
               style: ElevatedButton.styleFrom(
                 backgroundColor: const Color(0xFF2563EB),
