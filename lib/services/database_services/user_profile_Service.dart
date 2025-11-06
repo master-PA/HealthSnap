@@ -169,6 +169,20 @@ class UserProfileService {
       print('Body: ${response.body}');
 
       if (response.statusCode == 200 || response.statusCode == 201) {
+        final data = jsonDecode(response.body);
+
+        final entry = data['data']?['entry'];
+        if (entry != null) {
+          final updatedProfile = userProfile.copyWith(
+            prediction: entry['prediction'],
+            confidence: (entry['confidence'] ?? 0).toDouble(),
+            prediction2: entry['prediction_2'],
+            confidence2: (entry['confidence_2'] ?? 0).toDouble(),
+          );
+
+          userProfileNotifier.value = updatedProfile;
+        }
+
         return true;
       } else {
         print('Failed to save profile: ${response.reasonPhrase}');

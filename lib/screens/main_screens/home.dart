@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:healthsnap_app/models/user_profile_model.dart';
@@ -118,8 +119,51 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 }
 
-class HomeMainView extends StatelessWidget {
+class HomeMainView extends StatefulWidget {
   const HomeMainView({super.key});
+
+  @override
+  State<HomeMainView> createState() => _HomeMainViewState();
+}
+
+class _HomeMainViewState extends State<HomeMainView> {
+  final List<String> _healthTips = [
+    'Stay hydrated! Aim for 8 glasses of water today.',
+    'Get at least 30 minutes of physical activity daily.',
+    'Aim for 7-9 hours of quality sleep each night.',
+    'Include fruits and vegetables in every meal.',
+    'Take short breaks from sitting every hour.',
+    'Practice deep breathing to reduce stress.',
+    'Limit processed foods and sugary drinks.',
+    'Wash your hands regularly to prevent infections.',
+    'Get some sunlight for vitamin D synthesis.',
+    'Practice good posture while working.',
+    'Schedule regular health check-ups.',
+    'Limit screen time before bed for better sleep.',
+    'Include protein in your breakfast for sustained energy.',
+    'Stretch regularly to maintain flexibility.',
+    'Practice mindfulness or meditation daily.',
+  ];
+
+  String _currentTip = '';
+  final Random _random = Random();
+
+  @override
+  void initState() {
+    super.initState();
+    _loadRandomTip();
+  }
+
+  void _loadRandomTip() {
+    setState(() {
+      _currentTip = _healthTips[_random.nextInt(_healthTips.length)];
+    });
+  }
+
+  Future<void> _onRefresh() async {
+    await Future.delayed(const Duration(milliseconds: 1000));
+    _loadRandomTip();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -174,124 +218,146 @@ class HomeMainView extends StatelessWidget {
             ),
 
             Expanded(
-              child: SingleChildScrollView(
-                padding: const EdgeInsets.all(20),
-                child: Column(
-                  children: [
-                    Row(
-                      children: [
-                        const Text('👋', style: TextStyle(fontSize: 28)),
-                        const SizedBox(width: 12),
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              'Welcome, $userName',
-                              style: const TextStyle(
-                                color: Colors.black87,
-                                fontSize: 20,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                            const SizedBox(height: 2),
-                            const Text(
-                              'Ready for a healthy day?',
-                              style: TextStyle(
-                                color: Colors.black54,
-                                fontSize: 12,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 20),
-                    Container(
-                      width: double.infinity,
-                      padding: const EdgeInsets.all(16),
-                      decoration: BoxDecoration(
-                        color: const Color(0xFFE8F4FD),
-                        borderRadius: BorderRadius.circular(12),
-                        border: Border.all(color: const Color(0xFFB3E5FC)),
-                      ),
-                      child: const Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
+              child: RefreshIndicator(
+                onRefresh: _onRefresh,
+                color: const Color(0xFF4FC3F7),
+                child: SingleChildScrollView(
+                  padding: const EdgeInsets.all(20),
+                  child: Column(
+                    children: [
+                      Row(
                         children: [
-                          Row(
+                          const Text('👋', style: TextStyle(fontSize: 28)),
+                          const SizedBox(width: 12),
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Icon(
-                                Icons.lightbulb_outline,
-                                color: Colors.amber,
-                                size: 18,
-                              ),
-                              SizedBox(width: 8),
                               Text(
-                                'Tip',
-                                style: TextStyle(
-                                  color: Colors.black,
-                                  fontSize: 14,
+                                'Welcome, $userName',
+                                style: const TextStyle(
+                                  color: Colors.black87,
+                                  fontSize: 20,
                                   fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              const SizedBox(height: 2),
+                              const Text(
+                                'Ready for a healthy day?',
+                                style: TextStyle(
+                                  color: Colors.black54,
+                                  fontSize: 12,
                                 ),
                               ),
                             ],
                           ),
-                          SizedBox(height: 8),
-                          Text(
-                            'Stay hydrated! Aim for 8 glasses of water today...',
-                            style: TextStyle(
-                              color: Color(0xFF041E7D),
-                              fontSize: 14,
-                            ),
-                          ),
                         ],
                       ),
-                    ),
-                    const SizedBox(height: 32),
-                    _buildFlashCard(
-                      icon: Icons.assignment_outlined,
-                      title: "Log New Data",
-                      subtitle: "Record symptoms, activities, mood",
-                      buttonText: "Start Tracking →",
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => const SurveyScreenSecond(),
-                          ),
-                        );
-                      },
-                    ),
-                    const SizedBox(height: 20),
-                    _buildFlashCard(
-                      icon: Icons.notifications_outlined,
-                      title: "Set a reminder",
-                      subtitle: "Schedule meds, appointments ...",
-                      buttonText: "New Reminder →",
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => const ReminderScreen(),
-                          ),
-                        );
-                      },
-                    ),
-                    const SizedBox(height: 20),
-                    _buildFlashCard(
-                      icon: Icons.insights_outlined,
-                      title: "Check My Trends",
-                      subtitle: "Hidden patterns, recommendations",
-                      buttonText: "View Insights →",
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => HealthTrendScreen(),
-                          ),
-                        );
-                      },
-                    ),
-                  ],
+                      const SizedBox(height: 20),
+                      Container(
+                        width: double.infinity,
+                        padding: const EdgeInsets.all(16),
+                        decoration: BoxDecoration(
+                          color: const Color(0xFFE8F4FD),
+                          borderRadius: BorderRadius.circular(12),
+                          border: Border.all(color: const Color(0xFFB3E5FC)),
+                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              children: [
+                                const Icon(
+                                  Icons.lightbulb_outline,
+                                  color: Colors.amber,
+                                  size: 18,
+                                ),
+                                const SizedBox(width: 8),
+                                const Text(
+                                  'Daily Health Tip',
+                                  style: TextStyle(
+                                    color: Colors.black,
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                                const Spacer(),
+                                GestureDetector(
+                                  onTap: _loadRandomTip,
+                                  child: const Icon(
+                                    Icons.refresh,
+                                    color: Color(0xFF4FC3F7),
+                                    size: 18,
+                                  ),
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 8),
+                            Text(
+                              _currentTip,
+                              style: const TextStyle(
+                                color: Color(0xFF041E7D),
+                                fontSize: 14,
+                              ),
+                            ),
+                            const SizedBox(height: 4),
+                            const Text(
+                              'Pull down to refresh for more tips',
+                              style: TextStyle(
+                                color: Colors.black54,
+                                fontSize: 10,
+                                fontStyle: FontStyle.italic,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(height: 32),
+                      _buildFlashCard(
+                        icon: Icons.assignment_outlined,
+                        title: "Log New Data",
+                        subtitle: "Record symptoms, activities, mood",
+                        buttonText: "Start Tracking →",
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => const SurveyScreenSecond(),
+                            ),
+                          );
+                        },
+                      ),
+                      const SizedBox(height: 20),
+                      _buildFlashCard(
+                        icon: Icons.notifications_outlined,
+                        title: "Set a reminder",
+                        subtitle: "Schedule meds, appointments ...",
+                        buttonText: "New Reminder →",
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => const ReminderScreen(),
+                            ),
+                          );
+                        },
+                      ),
+                      const SizedBox(height: 20),
+                      _buildFlashCard(
+                        icon: Icons.insights_outlined,
+                        title: "Check My Trends",
+                        subtitle: "Hidden patterns, recommendations",
+                        buttonText: "View Insights →",
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => HealthTrendScreen(),
+                            ),
+                          );
+                        },
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ),

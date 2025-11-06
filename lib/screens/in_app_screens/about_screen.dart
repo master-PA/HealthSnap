@@ -19,7 +19,7 @@ class AboutScreen extends StatelessWidget {
             child: SafeArea(
               bottom: false,
               child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                mainAxisAlignment: MainAxisAlignment.start,
                 children: [
                   IconButton(
                     onPressed: () {
@@ -29,14 +29,6 @@ class AboutScreen extends StatelessWidget {
                       Icons.arrow_back,
                       color: Colors.black87,
                       size: 24,
-                    ),
-                  ),
-                  IconButton(
-                    onPressed: () {},
-                    icon: const Icon(
-                      Icons.menu,
-                      color: Colors.black87,
-                      size: 28,
                     ),
                   ),
                 ],
@@ -164,12 +156,12 @@ class AboutScreen extends StatelessWidget {
                   // ),
                   // ),
                   // const SizedBox(height: 40),
-                  const Center(
-                    child: Text(
-                      'Ready to take control of your health ?',
-                      style: TextStyle(fontSize: 16, color: Colors.black87),
-                    ),
-                  ),
+                  // const Center(
+                  //   child: Text(
+                  //     'Ready to take control of your health ?',
+                  //     style: TextStyle(fontSize: 16, color: Colors.black87),
+                  //   ),
+                  // ),
                   // const SizedBox(height: 16),
                   // Center(
                   //   child: ElevatedButton(

@@ -27,6 +27,7 @@ class _SurveyScreenSevenState extends State<SurveyScreenSeven> {
 
   bool _isLoading = false;
   final AuthService _authService = AuthService();
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
   @override
   void dispose() {
@@ -70,6 +71,16 @@ class _SurveyScreenSevenState extends State<SurveyScreenSeven> {
   }
 
   Future<void> _submitAllData() async {
+    if (!_formKey.currentState!.validate()) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text("Please fill all required fields correctly"),
+          backgroundColor: Colors.red,
+        ),
+      );
+      return;
+    }
+
     _saveHealthMetrics();
 
     setState(() {
@@ -210,105 +221,191 @@ class _SurveyScreenSevenState extends State<SurveyScreenSeven> {
                   horizontal: 24,
                   vertical: 24,
                 ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    TextButton.icon(
-                      onPressed: () => Navigator.pop(context),
-                      icon: const Icon(Icons.arrow_back_ios, size: 16),
-                      label: const Text('Back'),
-                      style: TextButton.styleFrom(
-                        foregroundColor: Colors.grey[700],
-                        padding: EdgeInsets.zero,
+                child: Form(
+                  key: _formKey,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      TextButton.icon(
+                        onPressed: () => Navigator.pop(context),
+                        icon: const Icon(Icons.arrow_back_ios, size: 16),
+                        label: const Text('Back'),
+                        style: TextButton.styleFrom(
+                          foregroundColor: Colors.grey[700],
+                          padding: EdgeInsets.zero,
+                        ),
                       ),
-                    ),
-                    const SizedBox(height: 16),
-                    SurveyProgressIndicator(currentStep: 3),
-                    const SizedBox(height: 20),
-                    Text(
-                      'Fuel Your Progress : Enter Your\nMatrices for Personalized Advice',
-                    ),
-                    const SizedBox(height: 16),
-                    SurveyTextField(
-                      title: "Steps Walked",
-                      controller: _stepsC,
-                      hinttext: "e.g., 7,500 steps today",
-                    ),
-                    const SizedBox(height: 16),
-                    SurveyTextField(
-                      title: "Water Intake",
-                      controller: _waterC,
-                      hinttext: "e.g., 2.5 litres or 8 glasses",
-                    ),
-                    const SizedBox(height: 16),
-                    SurveyTextField(
-                      title: "Sleep Hours",
-                      controller: _sleepC,
-                      hinttext: "e.g., slept for 7 hours last night",
-                    ),
-                    const SizedBox(height: 16),
-                    SurveyTextField(
-                      title: "Average Heart Beat",
-                      controller: _heartC,
-                      hinttext: "e.g., 78 bpm (beats per minute)",
-                    ),
-                    const SizedBox(height: 16),
-                    SurveyTextField(
-                      title: "BMI (Body Mass Index)",
-                      controller: _bmiC,
-                      hinttext: "e.g., 23.4 (Normal range)",
-                    ),
-                    const SizedBox(height: 16),
-                    SurveyTextField(
-                      title: "Mental wellbeing score",
-                      controller: _mentalC,
-                      hinttext: "e.g., Feeling relaxed or focussed (8/10)",
-                      keyboardtype: TextInputType.text,
-                    ),
-                    const SizedBox(height: 16),
-                    SurveyTextField(
-                      title: "Calorie Intake",
-                      controller: _calorieC,
-                      hinttext: "e.g., 1,950 kcal today",
-                    ),
-                    const SizedBox(height: 40),
+                      const SizedBox(height: 16),
+                      SurveyProgressIndicator(currentStep: 3),
+                      const SizedBox(height: 20),
+                      Text(
+                        'Fuel Your Progress : Enter Your\nMatrices for Personalized Advice',
+                      ),
+                      const SizedBox(height: 16),
+                      SurveyTextField(
+                        title: "Steps Walked *",
+                        controller: _stepsC,
+                        hinttext: "e.g., 7,500 steps today",
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return "Enter the value";
+                          }
+                          final trimmedValue = value.trim();
+                          final newValue = double.tryParse(trimmedValue);
+                          if (newValue == null) {
+                            return "Enter a valid number";
+                          }
 
-                    Align(
-                      alignment: AlignmentGeometry.centerRight,
-                      child: _isLoading
-                          ? LoadingWidget()
-                          : ElevatedButton(
-                              onPressed: () async {
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  SnackBar(
-                                    content: Text(
-                                      "View your Health Trends in trends section",
-                                    ),
+                          return null;
+                        },
+                      ),
+                      const SizedBox(height: 16),
+                      SurveyTextField(
+                        title: "Water Intake *",
+                        controller: _waterC,
+                        hinttext: "e.g., 2.5 litres",
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return "Enter the value";
+                          }
+                          final trimmedValue = value.trim();
+                          final newValue = double.tryParse(trimmedValue);
+                          if (newValue == null) {
+                            return "Enter a valid number";
+                          }
+
+                          return null;
+                        },
+                      ),
+                      const SizedBox(height: 16),
+                      SurveyTextField(
+                        title: "Sleep Hours *",
+                        controller: _sleepC,
+                        hinttext: "e.g., slept for 7 hours last night",
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return "Enter the value";
+                          }
+                          final trimmedValue = value.trim();
+                          final newValue = double.tryParse(trimmedValue);
+                          if (newValue == null) {
+                            return "Enter a valid number";
+                          }
+                          if (newValue < 0 || newValue > 24) {
+                            return "Sleep hours must be between 0-24";
+                          }
+                          return null;
+                        },
+                      ),
+                      const SizedBox(height: 16),
+                      SurveyTextField(
+                        title: "Average Heart Beat *",
+                        controller: _heartC,
+                        hinttext: "e.g., 78 bpm (beats per minute)",
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return "Enter the value";
+                          }
+                          final trimmedValue = value.trim();
+                          final newValue = double.tryParse(trimmedValue);
+                          if (newValue == null) {
+                            return "Enter a valid number";
+                          }
+                          if (newValue < 30 || newValue > 200) {
+                            return "Heart rate must be between 30-200 bpm";
+                          }
+
+                          return null;
+                        },
+                      ),
+                      const SizedBox(height: 16),
+                      SurveyTextField(
+                        title: "BMI (Body Mass Index) *",
+                        controller: _bmiC,
+                        hinttext: "e.g., 23.4 (Normal range)",
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return "Enter the value";
+                          }
+                          final trimmedValue = value.trim();
+                          final newValue = double.tryParse(trimmedValue);
+                          if (newValue == null) {
+                            return "Enter a valid number";
+                          }
+                          if (newValue < 10 || newValue > 50) {
+                            return "BMI must be between 10-50";
+                          }
+
+                          return null;
+                        },
+                      ),
+                      const SizedBox(height: 16),
+                      SurveyTextField(
+                        title: "Mental wellbeing score *",
+                        controller: _mentalC,
+                        hinttext: "e.g., (8/10) relaxed or focussed ",
+                        keyboardtype: TextInputType.number,
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return "Enter mental wellbeing";
+                          }
+                          final trimmedValue = value.trim();
+                          final newValue = double.tryParse(trimmedValue);
+
+                          if (newValue == null) {
+                            return "Enter a number score";
+                          }
+                          if (newValue < 0 || newValue > 10) {
+                            return "Please describe your mental state (min 3 characters)";
+                          }
+
+                          return null;
+                        },
+                      ),
+                      const SizedBox(height: 16),
+                      SurveyTextField(
+                        title: "Calorie Intake *",
+                        controller: _calorieC,
+                        hinttext: "e.g., 1,950 kcal today",
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return "Enter the value";
+                          }
+                          final trimmedValue = value.trim();
+                          final newValue = double.tryParse(trimmedValue);
+                          if (newValue == null) {
+                            return "Enter a valid number";
+                          }
+                          if (newValue < 0 || newValue > 10000) {
+                            return "Calorie intake must be between 0-10,000 kcal";
+                          }
+
+                          return null;
+                        },
+                      ),
+                      const SizedBox(height: 40),
+
+                      Align(
+                        alignment: AlignmentGeometry.centerRight,
+                        child: _isLoading
+                            ? LoadingWidget()
+                            : ElevatedButton(
+                                onPressed: _submitAllData,
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: Colors.blue,
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 40,
+                                    vertical: 12,
                                   ),
-                                );
-                                await _submitAllData();
-                                Navigator.pushAndRemoveUntil(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) => HomeScreen(),
-                                  ),
-                                  (Route<dynamic> route) => false,
-                                );
-                              },
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: Colors.blue,
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 40,
-                                  vertical: 12,
+                                ),
+                                child: const Text(
+                                  'Next',
+                                  style: TextStyle(color: Colors.white),
                                 ),
                               ),
-                              child: const Text(
-                                'Next',
-                                style: TextStyle(color: Colors.white),
-                              ),
-                            ),
-                    ),
-                  ],
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ),

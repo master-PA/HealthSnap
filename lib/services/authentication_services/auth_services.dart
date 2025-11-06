@@ -12,7 +12,7 @@ class AuthService {
     required String password,
   }) async {
     try {
-      final respose = await http.post(
+      final response = await http.post(
         Uri.parse('$baseUrl/auth/register'),
         headers: {'Content-Type': 'application/json'},
         body: jsonEncode({
@@ -21,12 +21,12 @@ class AuthService {
           'password': password,
         }),
       );
-      if (respose.statusCode == 201) {
-        return {'success': true, 'data': jsonDecode(respose.body)};
+      if (response.statusCode == 201) {
+        return {'success': true, 'data': jsonDecode(response.body)};
       } else {
         return {
           'success': false,
-          'message': 'Registration failed: ${respose.body}',
+          'message': 'Registration failed: ${response.body}',
         };
       }
     } catch (e) {
@@ -48,15 +48,23 @@ class AuthService {
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
 
+        if (data['token'] == null) {
+          return {'success': false, 'message': 'No token received from server'};
+        }
+
         await saveToken(data['token']);
         await saveUserId(data['_id']);
 
         return {'success': true, 'data': data};
       } else {
-        return {'success': false, 'message': 'Login failed: ${response.body}'};
+        final errorData = jsonDecode(response.body);
+        return {
+          'success': false,
+          'message': errorData['message'] ?? 'Login failed',
+        };
       }
     } catch (e) {
-      return {'success': false, 'message': 'Error: $e'};
+      return {'success': false, 'message': 'Network error: $e'};
     }
   }
 
@@ -96,16 +104,17 @@ class AuthService {
         body: jsonEncode({'password': newPassword}),
       );
 
+      final responseData = jsonDecode(response.body);
+
       if (response.statusCode == 200) {
         return {
           'success': true,
-          'message': 'Password has been reset successfully',
+          'message': responseData['message'] ?? 'Password reset successfully',
         };
       } else {
-        final errorData = jsonDecode(response.body);
         return {
           'success': false,
-          'message': errorData['message'] ?? 'Failed to reset password',
+          'message': responseData['message'] ?? 'Failed to reset password',
         };
       }
     } catch (e) {
@@ -178,8 +187,13 @@ class AuthService {
   }
 
   Future<String?> getToken() async {
-    final prefs = await SharedPreferences.getInstance();
-    return prefs.getString('auth_token');
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      return prefs.getString('auth_token');
+    } catch (e) {
+      print('Error retrieving token: $e');
+      return null;
+    }
   }
 
   Future<String?> getUserId() async {
@@ -187,9 +201,30 @@ class AuthService {
     return prefs.getString('user_id');
   }
 
+  Future<bool> isTokenValid() async {
+    final token = await getToken();
+    if (token == null) return false;
+
+    try {
+      final parts = token.split('.');
+      if (parts.length != 3) return false;
+
+      final payload = jsonDecode(utf8.decode(base64Url.decode(parts[1])));
+      final exp = payload['exp'] as int?;
+      if (exp != null) {
+        final expiryTime = DateTime.fromMillisecondsSinceEpoch(exp * 1000);
+        return expiryTime.isAfter(DateTime.now());
+      }
+    } catch (e) {
+      return false;
+    }
+
+    return true;
+  }
+
   Future<bool> isLoggedIn() async {
     final token = await getToken();
-    return token != null && token.isNotEmpty;
+    return token != null && token.isNotEmpty && await isTokenValid();
   }
 
   Future<void> logout() async {

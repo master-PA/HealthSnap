@@ -132,7 +132,7 @@ class _SurveyScreenSixState extends State<SurveyScreenSix> {
                         maxLines: 5,
                         decoration: InputDecoration(
                           hintText:
-                              "✏️ Please describe any unique details, that makes them better or worse (e.g., 'worse in the morning', 'Happens after exercise')",
+                              "✏️ Please describe any unique details, \nthat makes them better or worse (e.g., 'worse in the morning', 'Happens after exercise')",
                           hintStyle: TextStyle(
                             color: Colors.grey[600],
                             fontSize: 14,

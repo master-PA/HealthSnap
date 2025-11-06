@@ -33,30 +33,42 @@ class _RegisterScreenState extends State<RegisterScreen> {
   Future<void> register() async {
     if (!_formKey.currentState!.validate()) return;
 
+    final result = await _authService.register(
+      fullname: _fullNamec.text.trim(),
+      email: _emailc.text.trim(),
+      password: _passwordc.text,
+    );
+
     setState(() => _isLoading = true);
 
+    if (!mounted) return;
     try {
-      final result = await _authService.register(
-        fullname: _fullNamec.text.trim(),
-        email: _emailc.text.trim(),
-        password: _passwordc.text,
-      );
-
       setState(() => _isLoading = false);
 
       if (!mounted) return;
 
-      if (result['success']) {
+      if (result['success'] == true) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text('Account created successfully! Please login.'),
+            content: Text(
+              'Register successful!, Check your Email Inbox or Spam to verify.',
+            ),
             backgroundColor: Colors.green,
-            duration: Duration(seconds: 3),
           ),
         );
 
         Navigator.of(context).pushReplacement(
           MaterialPageRoute(builder: (context) => const LoginScreen()),
+        );
+      } else if (result['message']?.toLowerCase().contains('verify') == true ||
+          result['email_verified'] == false) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text(
+              'Please verify your email first. Check your Inbox or Spam!',
+            ),
+            backgroundColor: Colors.orange,
+          ),
         );
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -487,44 +499,65 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                 ),
                                 const SizedBox(height: 16),
 
-                                OutlinedButton.icon(
-                                  onPressed: _isLoading
-                                      ? null
-                                      : () {
-                                          ScaffoldMessenger.of(
-                                            context,
-                                          ).showSnackBar(
-                                            const SnackBar(
-                                              content: Text(
-                                                'Google Sign-In coming soon!',
-                                              ),
-                                              duration: Duration(seconds: 2),
-                                            ),
-                                          );
-                                        },
-                                  style: OutlinedButton.styleFrom(
-                                    padding: const EdgeInsets.symmetric(
-                                      vertical: 14,
-                                    ),
-                                    side: BorderSide(
+                                Container(
+                                  width: double.infinity,
+                                  height: 50,
+                                  decoration: BoxDecoration(
+                                    color: Colors.white,
+                                    border: Border.all(
                                       color: Colors.grey[300]!,
                                       width: 1,
                                     ),
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(8),
+                                    borderRadius: BorderRadius.circular(8),
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: Colors.black.withOpacity(0.1),
+                                        blurRadius: 2,
+                                        offset: const Offset(0, 1),
+                                      ),
+                                    ],
+                                  ),
+                                  child: TextButton(
+                                    onPressed: () {
+                                      _isLoading
+                                          ? null
+                                          : ScaffoldMessenger.of(
+                                              context,
+                                            ).showSnackBar(
+                                              const SnackBar(
+                                                content: Text(
+                                                  'Google Sign-In coming soon!',
+                                                ),
+                                              ),
+                                            );
+                                    },
+                                    style: TextButton.styleFrom(
+                                      padding: const EdgeInsets.symmetric(
+                                        horizontal: 12,
+                                      ),
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(8),
+                                      ),
                                     ),
-                                    backgroundColor: Colors.white,
-                                  ),
-                                  icon: Image.asset(
-                                    'assets/google.png',
-                                    height: 20,
-                                  ),
-                                  label: const Text(
-                                    "Continue with Google",
-                                    style: TextStyle(
-                                      fontSize: 15,
-                                      color: Colors.black87,
-                                      fontWeight: FontWeight.w500,
+                                    child: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      children: [
+                                        Image.asset(
+                                          'assets/google.png',
+                                          height: 24,
+                                          width: 24,
+                                        ),
+                                        const SizedBox(width: 12),
+                                        const Text(
+                                          "Sign in with Google",
+                                          style: TextStyle(
+                                            fontSize: 16,
+                                            color: Colors.black54,
+                                            fontWeight: FontWeight.w500,
+                                          ),
+                                        ),
+                                      ],
                                     ),
                                   ),
                                 ),

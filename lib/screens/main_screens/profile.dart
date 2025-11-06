@@ -21,16 +21,19 @@ class ProfileScreen extends StatelessWidget {
         return Scaffold(
           backgroundColor: Colors.white,
           body: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Container(
                 decoration: const BoxDecoration(
                   gradient: LinearGradient(
                     colors: [Color(0xFFB3E5FC), Color(0xFF4FC3F7)],
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
                   ),
                 ),
                 padding: const EdgeInsets.symmetric(
                   horizontal: 16,
-                  vertical: 12,
+                  vertical: 10,
                 ),
                 child: SafeArea(
                   bottom: false,
@@ -66,95 +69,98 @@ class ProfileScreen extends StatelessWidget {
                 ),
               ),
 
-              Expanded(
-                child: SingleChildScrollView(
-                  padding: const EdgeInsets.all(16),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const SizedBox(height: 20),
-                      const Text(
-                        "Profile and Settings",
-                        style: TextStyle(
-                          fontWeight: FontWeight.w700,
-                          fontSize: 25,
-                          color: Colors.black,
-                        ),
+              const SizedBox(height: 20),
+
+              const Padding(
+                padding: EdgeInsets.symmetric(horizontal: 16),
+                child: Text(
+                  "Profile and Settings",
+                  style: TextStyle(
+                    fontWeight: FontWeight.w700,
+                    fontSize: 26,
+                    color: Colors.black,
+                  ),
+                ),
+              ),
+
+              const SizedBox(height: 30),
+
+              Center(
+                child: Column(
+                  children: [
+                    const CircleAvatar(
+                      radius: 70,
+                      backgroundColor: Colors.black87,
+                      child: Icon(Icons.person, size: 80, color: Colors.white),
+                    ),
+                    const SizedBox(height: 20),
+                    Text(
+                      username,
+                      style: const TextStyle(
+                        fontSize: 22,
+                        fontWeight: FontWeight.w600,
+                        color: Colors.black,
                       ),
-                      const SizedBox(height: 16),
-
-                      ListTile(
-                        leading: const CircleAvatar(
-                          child: Icon(Icons.person_pin),
-                          backgroundColor: Colors.blueGrey,
-                          radius: 40,
-                        ),
-                        title: Text(
-                          username,
-                          style: const TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w700,
-                            color: Colors.black,
-                          ),
-                        ),
-                        subtitle: const Text(
-                          "Email hidden for privacy",
-                          style: TextStyle(
-                            fontSize: 10,
-                            fontWeight: FontWeight.w400,
-                          ),
-                        ),
+                    ),
+                    const SizedBox(height: 6),
+                    Text(
+                      "Email hidden for privacy",
+                      style: const TextStyle(
+                        fontSize: 14,
+                        color: Colors.black87,
                       ),
+                    ),
+                  ],
+                ),
+              ),
 
-                      const SizedBox(height: 20),
+              const SizedBox(height: 40),
 
-                      ListTile(
-                        leading: const Icon(
-                          Icons.delete_forever,
-                          color: Colors.black,
-                        ),
-                        title: const Text(
-                          "Delete Account",
-                          style: TextStyle(color: Colors.black),
-                        ),
-                        onTap: () => _confirmDelete(context, authService),
-                      ),
-
-                      const SizedBox(height: 16),
-
-                      const ListTile(
-                        leading: Icon(Icons.edit_square),
-                        title: const Text("Edit info"),
-                      ),
-
-                      const SizedBox(height: 16),
-
-                      ElevatedButton(
-                        onPressed: () => _logout(context, authService),
-                        style: ElevatedButton.styleFrom(
-                          shape: const StadiumBorder(),
-                          backgroundColor: Colors.lightBlueAccent,
-                          padding: const EdgeInsets.symmetric(
-                            vertical: 12,
-                            horizontal: 20,
-                          ),
-                        ),
-                        child: const Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Icon(Icons.logout, color: Colors.red),
-                            SizedBox(width: 8),
-                            const Text(
-                              "Log Out",
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 16,
-                              ),
-                            ),
-                          ],
-                        ),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                child: InkWell(
+                  onTap: () => _confirmDelete(context, authService),
+                  child: Row(
+                    children: const [
+                      Icon(Icons.delete_forever, color: Colors.black, size: 26),
+                      SizedBox(width: 10),
+                      Text(
+                        "Delete my account",
+                        style: TextStyle(color: Colors.black, fontSize: 18),
                       ),
                     ],
+                  ),
+                ),
+              ),
+
+              const Spacer(),
+
+              Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 20,
+                  vertical: 30,
+                ),
+                child: SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton.icon(
+                    onPressed: () => _logout(context, authService),
+                    icon: const Icon(Icons.logout, color: Colors.black),
+                    label: const Text(
+                      "Log Out",
+                      style: TextStyle(
+                        color: Colors.black,
+                        fontSize: 18,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color(0xFFE3F2FD),
+                      padding: const EdgeInsets.symmetric(vertical: 14),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(16),
+                      ),
+                      elevation: 0,
+                    ),
                   ),
                 ),
               ),

@@ -144,6 +144,11 @@ class UserProfile {
     double? bmi,
     int? heartRate,
     int? calorieIntake,
+    String? prediction,
+    double? confidence,
+    int? daysProvided,
+    String? prediction2,
+    double? confidence2,
   }) {
     return UserProfile(
       name: name ?? this.name,

@@ -6,6 +6,7 @@ class SurveyTextField extends StatelessWidget {
     required this.title,
     required this.controller,
     required this.hinttext,
+    required this.validator,
     this.keyboardtype = TextInputType.number,
   });
 
@@ -13,10 +14,12 @@ class SurveyTextField extends StatelessWidget {
   final TextEditingController controller;
   final String hinttext;
   final TextInputType keyboardtype;
+  final String? Function(String?)? validator;
+
   @override
   Widget build(BuildContext context) {
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.center,
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(title, style: TextStyle(color: Colors.black, fontSize: 16)),
         const SizedBox(height: 8),
@@ -24,16 +27,10 @@ class SurveyTextField extends StatelessWidget {
           keyboardType: keyboardtype,
           controller: controller,
           decoration: InputDecoration(
-            focusColor: Colors.blue,
-            filled: true,
-            fillColor: Colors.grey[200],
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(8),
-              borderSide: BorderSide.none,
-            ),
             hintText: hinttext,
-            hintStyle: TextStyle(fontStyle: FontStyle.italic),
+            border: OutlineInputBorder(),
           ),
+          validator: validator,
         ),
       ],
     );
