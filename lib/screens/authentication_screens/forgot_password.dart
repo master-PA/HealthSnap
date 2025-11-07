@@ -76,7 +76,7 @@ class _ForgotPasswordState extends State<ForgotPassword> {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Image.asset('assets/logo.png', height: 60),
+                  Image.asset('assets/logo.png', height: 40),
                   PopupMenuButton<String>(
                     icon: const Icon(Icons.menu, color: Colors.white, size: 28),
                     onSelected: (value) {

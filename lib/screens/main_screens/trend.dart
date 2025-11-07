@@ -22,29 +22,32 @@ class HealthTrendScreen extends StatelessWidget {
           final advice = HealthScoreUtils.generateHealthAdvice(userProfile);
           final predictions = PredictionHelper(userProfile);
 
-          return Column(
-            children: [
-              _buildHeader(context),
-              Expanded(
-                child: SingleChildScrollView(
-                  padding: const EdgeInsets.all(16),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      _buildMetricsGrid(userProfile),
-                      const SizedBox(height: 20),
-                      _buildSymptomsCard(context, userProfile),
-                      const SizedBox(height: 20),
-                      _buildHealthScoreCard(score),
-                      const SizedBox(height: 20),
-                      _buildPredictionCard(predictions),
-                      const SizedBox(height: 20),
-                      _buildAdviceCard(advice),
-                    ],
+          return Scrollbar(
+            interactive: true,
+            child: Column(
+              children: [
+                _buildHeader(context),
+                Expanded(
+                  child: SingleChildScrollView(
+                    padding: const EdgeInsets.all(16),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        _buildMetricsGrid(userProfile),
+                        const SizedBox(height: 20),
+                        _buildSymptomsCard(context, userProfile),
+                        const SizedBox(height: 20),
+                        _buildHealthScoreCard(score),
+                        const SizedBox(height: 20),
+                        _buildPredictionCard(predictions),
+                        const SizedBox(height: 20),
+                        _buildAdviceCard(advice),
+                      ],
+                    ),
                   ),
                 ),
-              ),
-            ],
+              ],
+            ),
           );
         },
       ),
@@ -210,16 +213,20 @@ class HealthTrendScreen extends StatelessWidget {
           Stack(
             alignment: Alignment.center,
             children: [
-              CircularProgressIndicator(
-                value: score / 100,
-                strokeWidth: 8,
-                color: Colors.blue,
-                backgroundColor: Colors.grey.shade200,
+              SizedBox(
+                width: 100,
+                height: 100,
+                child: CircularProgressIndicator(
+                  value: score / 100,
+                  strokeWidth: 8,
+                  color: Colors.blue,
+                  backgroundColor: Colors.grey.shade200,
+                ),
               ),
               Text(
                 "$score",
                 style: const TextStyle(
-                  fontSize: 20,
+                  fontSize: 32,
                   fontWeight: FontWeight.bold,
                 ),
               ),
@@ -231,9 +238,15 @@ class HealthTrendScreen extends StatelessWidget {
             style: const TextStyle(
               color: Colors.blue,
               fontWeight: FontWeight.bold,
+              fontSize: 16,
             ),
           ),
-          Text(feedback, textAlign: TextAlign.center),
+          const SizedBox(height: 5),
+          Text(
+            feedback,
+            textAlign: TextAlign.center,
+            style: const TextStyle(fontSize: 13),
+          ),
         ],
       ),
     );
@@ -242,8 +255,11 @@ class HealthTrendScreen extends StatelessWidget {
   Widget _buildPredictionCard(PredictionHelper p) {
     if (!p.hasPredictions) {
       return _infoCard(
-        title: "Health Insights",
-        child: const Text("Keep logging data to unlock AI insights."),
+        title: "AI Health Insights",
+        child: const Text(
+          "Complete your health assessment to get ML-powered insights",
+          style: TextStyle(color: Colors.grey, fontStyle: FontStyle.italic),
+        ),
       );
     }
 
@@ -252,43 +268,103 @@ class HealthTrendScreen extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          if (p.trend != null)
-            _mlBlock(p.trendTitle, p.trendColor, p.trendIcon, p.trendMsg),
-          if (p.tip != null)
-            _mlBlock(p.tipTitle, Colors.blue, p.tipIcon, p.tipMsg),
+          if (p.trend != null) _mlBlock(p),
+          if (p.tip != null) _mlBlock2(p),
         ],
       ),
     );
   }
 
-  Widget _mlBlock(String title, Color color, IconData icon, String msg) {
+  Widget _mlBlock(PredictionHelper p) {
     return Container(
       margin: const EdgeInsets.only(bottom: 10),
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: color.withOpacity(0.08),
+        color: p.trendColor.withOpacity(0.08),
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: color.withOpacity(0.4)),
+        border: Border.all(color: p.trendColor.withOpacity(0.4)),
       ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Icon(icon, color: color),
-          const SizedBox(width: 10),
+          Icon(p.trendIcon, color: p.trendColor, size: 28),
+          const SizedBox(width: 12),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  title,
+                  p.trendTitle,
                   style: TextStyle(
-                    color: color,
+                    color: p.trendColor,
                     fontWeight: FontWeight.bold,
                     fontSize: 14,
                   ),
                 ),
                 const SizedBox(height: 5),
-                Text(msg, style: const TextStyle(fontSize: 13)),
+                Text(
+                  p.trendMsg,
+                  style: const TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+                if (p.trendConfidence.isNotEmpty) ...[
+                  const SizedBox(height: 3),
+                  Text(
+                    p.trendConfidence,
+                    style: TextStyle(fontSize: 11, color: Colors.grey[600]),
+                  ),
+                ],
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _mlBlock2(PredictionHelper p) {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 10),
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: Colors.blue.withOpacity(0.08),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: Colors.blue.withOpacity(0.4)),
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Icon(p.tipIcon, color: Colors.blue, size: 28),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  p.tipTitle,
+                  style: const TextStyle(
+                    color: Colors.blue,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 14,
+                  ),
+                ),
+                const SizedBox(height: 5),
+                Text(
+                  p.tipMsg,
+                  style: const TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+                if (p.tipConfidence.isNotEmpty) ...[
+                  const SizedBox(height: 3),
+                  Text(
+                    p.tipConfidence,
+                    style: TextStyle(fontSize: 11, color: Colors.grey[600]),
+                  ),
+                ],
               ],
             ),
           ),
@@ -299,7 +375,7 @@ class HealthTrendScreen extends StatelessWidget {
 
   Widget _buildAdviceCard(String advice) {
     return _infoCard(
-      title: "Advices",
+      title: "General Advice",
       child: Text(advice, style: const TextStyle(fontSize: 14, height: 1.4)),
     );
   }

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:healthsnap_app/screens/authentication_screens/create_account.dart';
+import 'package:healthsnap_app/screens/in_app_screens/about_screen.dart';
 import 'package:healthsnap_app/widgets/bulletin.dart';
 
 class StartTrackingScreen extends StatefulWidget {
@@ -51,9 +52,25 @@ class _StartTrackingScreenState extends State<StartTrackingScreen> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Image.asset('assets/logo.png', height: 80),
-                  IconButton(
-                    onPressed: () {},
+                  const Spacer(),
+                  PopupMenuButton<String>(
                     icon: const Icon(Icons.menu, color: Colors.white, size: 28),
+                    onSelected: (value) {
+                      if (value == 'about') {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => const AboutScreen(),
+                          ),
+                        );
+                      }
+                    },
+                    itemBuilder: (context) => [
+                      const PopupMenuItem(
+                        value: 'about',
+                        child: Text('About Us'),
+                      ),
+                    ],
                   ),
                 ],
               ),

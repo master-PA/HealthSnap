@@ -63,7 +63,7 @@ class _SurveyScreenSevenState extends State<SurveyScreenSeven> {
       calorieIntake: _parseInt(_calorieC.text),
     );
 
-    UserProfileService().updateLifestyleInfo(
+    UserProfileService().updateHealthMetrics(
       details: _mentalC.text.isNotEmpty
           ? "Mental wellbeing: ${_mentalC.text}"
           : null,
@@ -341,9 +341,9 @@ class _SurveyScreenSevenState extends State<SurveyScreenSeven> {
                       ),
                       const SizedBox(height: 16),
                       SurveyTextField(
-                        title: "Mental wellbeing score *",
+                        title: "Mental wellbeing state *",
                         controller: _mentalC,
-                        hinttext: "e.g., (8/10) relaxed or focussed ",
+                        hinttext: "e.g., relaxed or focussed ",
                         keyboardtype: TextInputType.number,
                         validator: (value) {
                           if (value == null || value.isEmpty) {

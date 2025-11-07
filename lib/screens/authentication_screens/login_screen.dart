@@ -52,9 +52,7 @@ class _LoginScreenState extends State<LoginScreen> {
       Navigator.of(context).pushReplacement(
         MaterialPageRoute(builder: (context) => const HomeScreen()),
       );
-    }
-    // If email not verified
-    else if (result['message']?.toLowerCase().contains('verify') == true ||
+    } else if (result['message']?.toLowerCase().contains('verify') == true ||
         result['email_verified'] == false) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
@@ -81,7 +79,7 @@ class _LoginScreenState extends State<LoginScreen> {
       body: Column(
         children: [
           Container(
-            decoration: BoxDecoration(
+            decoration: const BoxDecoration(
               gradient: LinearGradient(
                 colors: [Color(0xFFB3E5FC), Color(0xFF4FC3F7)],
               ),
@@ -90,9 +88,9 @@ class _LoginScreenState extends State<LoginScreen> {
             child: SafeArea(
               bottom: false,
               child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Image.asset('assets/logo.png', height: 80),
+                  Image.asset('assets/logo.png', height: 40),
+                  const Spacer(),
                   PopupMenuButton<String>(
                     icon: const Icon(Icons.menu, color: Colors.white, size: 28),
                     onSelected: (value) {

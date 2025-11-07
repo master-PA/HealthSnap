@@ -17,8 +17,8 @@ class SurveyProgressIndicator extends StatelessWidget {
     return AnimatedContainer(
       duration: Duration(milliseconds: 600),
       curve: Curves.easeInOut,
-      width: 30,
-      height: 30,
+      width: 20,
+      height: 20,
       decoration: BoxDecoration(
         shape: BoxShape.circle,
         color: _circleColor(step),

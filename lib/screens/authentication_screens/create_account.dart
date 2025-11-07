@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:healthsnap_app/screens/authentication_screens/login_screen.dart';
 import 'package:healthsnap_app/screens/in_app_screens/about_screen.dart';
 import 'package:healthsnap_app/services/authentication_services/auth_services.dart';
@@ -27,6 +28,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
     _emailc.dispose();
     _passwordc.dispose();
     isVisible1.dispose();
+    isVisible2.dispose();
     super.dispose();
   }
 
@@ -51,7 +53,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             content: Text(
-              'Register successful!, Check your Email Inbox or Spam to verify.',
+              'Register successful! Check your Email Inbox or Spam to verify.',
             ),
             backgroundColor: Colors.green,
           ),
@@ -59,16 +61,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
         Navigator.of(context).pushReplacement(
           MaterialPageRoute(builder: (context) => const LoginScreen()),
-        );
-      } else if (result['message']?.toLowerCase().contains('verify') == true ||
-          result['email_verified'] == false) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text(
-              'Please verify your email first. Check your Inbox or Spam!',
-            ),
-            backgroundColor: Colors.orange,
-          ),
         );
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -111,7 +103,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Image.asset('assets/logo.png', height: 80),
+                  Image.asset('assets/logo.png', height: 40),
                   PopupMenuButton<String>(
                     icon: const Icon(Icons.menu, color: Colors.white, size: 28),
                     onSelected: (value) {
@@ -206,10 +198,22 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                       ),
                                     ),
                                   ),
+                                  inputFormatters: [
+                                    FilteringTextInputFormatter.allow(
+                                      RegExp(r"[a-zA-Z\s'-]"),
+                                    ),
+                                  ],
                                   validator: (value) {
                                     if (value == null || value.isEmpty) {
                                       return "Enter your full name";
                                     }
+                                    final trimmedName = value.trim();
+                                    if (!RegExp(
+                                      r"^[a-zA-Z\s'-]+$",
+                                    ).hasMatch(trimmedName)) {
+                                      return "Name should contain only letters, spaces, hyphens (-) and apostrophes (')";
+                                    }
+
                                     return null;
                                   },
                                 ),
@@ -322,8 +326,16 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                         if (value == null || value.isEmpty) {
                                           return "Enter a Password";
                                         }
-                                        if (value.length < 6) {
-                                          return "Password must be at least 6 characters";
+                                        String pattern =
+                                            r'^(?=.*?[A-Z])(?=.*?[0-9])(?=.*?[!@#$%^&*()_+={}\[\]|\\:;"<>,.?/~`]).{8,}$';
+                                        RegExp regExp = RegExp(pattern);
+
+                                        if (!regExp.hasMatch(value)) {
+                                          return 'Password must contain at least one capital letter, one number, and one special character.';
+                                        }
+
+                                        if (value.length < 8) {
+                                          return "Password must be at least 8 characters";
                                         }
                                         return null;
                                       },

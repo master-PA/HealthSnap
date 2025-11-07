@@ -40,29 +40,36 @@ class UserProfileService {
   UserProfile get userProfile => userProfileNotifier.value;
 
   void _updateProfile(Map<String, dynamic> updates) {
-    final updatedProfile = userProfileNotifier.value.copyWith(
-      name: updates['name'],
-      gender: updates['gender'],
-      dob: updates['dob'],
-      relationship: updates['relationship'],
-      height: updates['height'],
-      weight: updates['weight'],
-      country: updates['country'],
-      dietType: updates['dietType'],
-      sleepQuality: updates['sleepQuality'],
-      hydrationLevel: updates['hydrationLevel'],
-      stressLevel: updates['stressLevel'],
-      smoking: updates['smoking'],
-      alcoholIntake: updates['alcoholIntake'],
-      symptoms: updates['symptoms'],
-      symptomSeverity: updates['symptomSeverity'],
-      details: updates['details'],
-      stepsWalked: updates['stepsWalked'],
-      sleepHours: updates['sleepHours'],
-      waterIntake: updates['waterIntake'],
-      bmi: updates['bmi'],
-      heartRate: updates['heartRate'],
-      calorieIntake: updates['calorieIntake'],
+    final current = userProfileNotifier.value;
+
+    final updatedProfile = UserProfile(
+      name: updates['name'] ?? current.name,
+      gender: updates['gender'] ?? current.gender,
+      dob: updates['dob'] ?? current.dob,
+      relationship: updates['relationship'] ?? current.relationship,
+      height: updates['height'] ?? current.height,
+      weight: updates['weight'] ?? current.weight,
+      country: updates['country'] ?? current.country,
+      dietType: updates['dietType'] ?? current.dietType,
+      sleepQuality: updates['sleepQuality'] ?? current.sleepQuality,
+      hydrationLevel: updates['hydrationLevel'] ?? current.hydrationLevel,
+      stressLevel: updates['stressLevel'] ?? current.stressLevel,
+      smoking: updates['smoking'] ?? current.smoking,
+      alcoholIntake: updates['alcoholIntake'] ?? current.alcoholIntake,
+      symptoms: updates['symptoms'] ?? current.symptoms,
+      symptomSeverity: updates['symptomSeverity'] ?? current.symptomSeverity,
+      details: updates['details'] ?? current.details,
+      stepsWalked: updates['stepsWalked'] ?? current.stepsWalked,
+      sleepHours: updates['sleepHours'] ?? current.sleepHours,
+      waterIntake: updates['waterIntake'] ?? current.waterIntake,
+      bmi: updates['bmi'] ?? current.bmi,
+      heartRate: updates['heartRate'] ?? current.heartRate,
+      calorieIntake: updates['calorieIntake'] ?? current.calorieIntake,
+      prediction: current.prediction,
+      confidence: current.confidence,
+      daysProvided: current.daysProvided,
+      prediction2: current.prediction2,
+      confidence2: current.confidence2,
     );
 
     userProfileNotifier.value = updatedProfile;
@@ -95,11 +102,6 @@ class UserProfileService {
     String? stressLevel,
     String? smoking,
     String? alcoholIntake,
-    String? details,
-    int? stepsWalked,
-    int? sleepHours,
-    double? waterIntake,
-    int? calorieIntake,
   }) {
     _updateProfile({
       'dietType': dietType,
@@ -108,11 +110,6 @@ class UserProfileService {
       'stressLevel': stressLevel,
       'smoking': smoking,
       'alcoholIntake': alcoholIntake,
-      'details': details,
-      'stepsWalked': stepsWalked,
-      'sleepHours': sleepHours,
-      'waterIntake': waterIntake,
-      'calorieIntake': calorieIntake,
     });
   }
 
@@ -156,40 +153,66 @@ class UserProfileService {
     final profile = userProfileNotifier.value;
 
     try {
+      final jsonData = profile.toJson();
+
+      // Debug: Print the data being sent
+      print('═══════════════════════════════════════════');
+      print('SENDING DATA TO SERVER:');
+      print('═══════════════════════════════════════════');
+      print(JsonEncoder.withIndent('  ').convert(jsonData));
+      print('═══════════════════════════════════════════');
+
       final response = await http.post(
         Uri.parse(url),
         headers: {
           'Authorization': 'Bearer $authToken',
           'Content-Type': 'application/json',
         },
-        body: json.encode(profile.toJson()),
+        body: json.encode(jsonData),
       );
 
-      print('API Response: ${response.statusCode}');
+      print('\n📥 SERVER RESPONSE:');
+      print('Status Code: ${response.statusCode}');
       print('Body: ${response.body}');
+      print('═══════════════════════════════════════════\n');
 
       if (response.statusCode == 200 || response.statusCode == 201) {
         final data = jsonDecode(response.body);
 
         final entry = data['data']?['entry'];
         if (entry != null) {
+          print('ML Predictions received:');
+          print(
+            '   Prediction 1: ${entry['prediction']} (${entry['confidence']})',
+          );
+          print(
+            '   Prediction 2: ${entry['prediction_2']} (${entry['confidence_2']})',
+          );
+
           final updatedProfile = userProfile.copyWith(
             prediction: entry['prediction'],
-            confidence: (entry['confidence'] ?? 0).toDouble(),
+            confidence: entry['confidence'] != null
+                ? (entry['confidence'] as num).toDouble()
+                : null,
             prediction2: entry['prediction_2'],
-            confidence2: (entry['confidence_2'] ?? 0).toDouble(),
+            confidence2: entry['confidence_2'] != null
+                ? (entry['confidence_2'] as num).toDouble()
+                : null,
           );
 
           userProfileNotifier.value = updatedProfile;
+        } else {
+          print(' Warning: No entry data in response');
         }
 
         return true;
       } else {
-        print('Failed to save profile: ${response.reasonPhrase}');
+        print('Failed to save profile: ${response.statusCode}');
+        print('Response: ${response.body}');
         return false;
       }
     } catch (e) {
-      print('Error saving profile: $e');
+      print(' Error saving profile: $e');
       return false;
     }
   }

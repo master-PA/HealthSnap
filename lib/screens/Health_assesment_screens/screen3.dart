@@ -147,8 +147,8 @@ class _SurveyScreenThirdState extends State<SurveyScreenThird> {
                     SurveySingleOption(
                       title: "Diet type",
                       first: "Vegan",
-                      second: "Vegetarian",
-                      third: "Non vegetarian",
+                      second: 'Vegetarian',
+                      third: 'Non-Vegetarian',
                       noOfOptions: 3,
                       selectedValue: dietType,
                       onChanged: (value) {
@@ -162,9 +162,9 @@ class _SurveyScreenThirdState extends State<SurveyScreenThird> {
                     const SizedBox(height: 20),
                     SurveySingleOption(
                       title: "Sleep quality",
-                      first: "Low",
+                      first: "Poor",
                       second: "Normal",
-                      third: "High",
+                      third: "Good",
                       noOfOptions: 3,
                       selectedValue: sleepQuality,
                       onChanged: (value) {

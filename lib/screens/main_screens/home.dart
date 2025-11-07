@@ -182,7 +182,7 @@ class _HomeMainViewState extends State<HomeMainView> {
                   colors: [Color(0xFFB3E5FC), Color(0xFF4FC3F7)],
                 ),
               ),
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
               child: SafeArea(
                 bottom: false,
                 child: Row(
@@ -392,14 +392,17 @@ class _HomeMainViewState extends State<HomeMainView> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Icon(icon, color: const Color(0xFF4FC3F7), size: 28),
+          Align(
+            alignment: Alignment.topCenter,
+            child: Icon(icon, color: const Color(0xFF4FC3F7), size: 28),
+          ),
           const SizedBox(height: 16),
           Text(
             title,
             style: const TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.bold,
-              color: Color(0xFF4FC3F7),
+              color: Color.fromARGB(255, 3, 3, 3),
             ),
           ),
           const SizedBox(height: 8),

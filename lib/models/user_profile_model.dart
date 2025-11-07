@@ -112,12 +112,15 @@ class UserProfile {
       bmi: (json['BMI'] ?? json['bmi'] ?? 0.0).toDouble(),
       heartRate: json['heart_rate'] ?? json['heartRate'] ?? 0,
       calorieIntake: json['calorie_intake'] ?? json['calorieIntake'] ?? 0,
-      prediction: json['prediction'] ?? json['mlPrediction']?['prediction'],
-      confidence: (json['confidence'] ?? json['mlPrediction']?['confidence'])
-          ?.toDouble(),
-      daysProvided: json['mlPrediction']?['days_provided'],
+      prediction: json['prediction'],
+      confidence: json['confidence'] != null
+          ? (json['confidence'] as num).toDouble()
+          : null,
+      daysProvided: json['days_provided'],
       prediction2: json['prediction_2'],
-      confidence2: (json['confidence_2'])?.toDouble(),
+      confidence2: json['confidence_2'] != null
+          ? (json['confidence_2'] as num).toDouble()
+          : null,
     );
   }
 
